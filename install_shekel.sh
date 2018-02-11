@@ -4,7 +4,7 @@
 # chmod +x and chown root
 # su to root (sudo su -)
 # copy to /root
-# then run ./shekel.sh
+# then run ./install_shekel.sh
 
 configure () {
 	echo "generating ~/.shekel/shekel.conf"
