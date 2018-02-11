@@ -43,7 +43,7 @@ configure () {
 	echo "rpcpassword=$rpcpassword" >> ~/.shekel/shekel.conf
 	sed -i '/externalip/c\' ~/.shekel/shekel.conf
 	echo "externalip=$externalip:5500" >> ~/.shekel/shekel.conf
-	ed -i '/masternodeaddr/c\' ~/.shekel/shekel.conf
+	sed -i '/masternodeaddr/c\' ~/.shekel/shekel.conf
 	echo "masternodeaddr=$externalip:5500" >> ~/.shekel/shekel.conf
 	sed -i '/masternodeprivkey/c\' ~/.shekel/shekel.conf
 	echo "masternodeprivkey=$masternodeprivkey" >> ~/.shekel/shekel.conf
