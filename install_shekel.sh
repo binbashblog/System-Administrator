@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage: 
-# wget https://github.com/cryptojatt/System-Administrator/edit/master/install_shekel.sh
+# wget https://github.com/cryptojatt/System-Administrator/blob/master/install_shekel.sh
 # chmod +x and chown root
 # e.g. chmod +x install_shekel.sh
 # su to root (sudo su -) in not already root
