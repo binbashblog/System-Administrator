@@ -102,26 +102,37 @@ configure () {
 	echo ""
 	echo "Waiting a 5 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 4:30 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 4 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 3:30 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 3 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 2:30 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 2 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 1:30 minutes for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 1 minute for shekeld to sync...please wait"
 	sleep 30
+	shekel-cli getinfo
 	echo "Waiting a 30 seconds for shekeld to sync...please wait"
 	sleep 10
+	shekel-cli getinfo
 	echo "Waiting a 20 seconds for shekeld to sync...please wait"
 	sleep 10
+	shekel-cli getinfo
 	echo "Waiting a 10 seconds for shekeld to sync...please wait"
 	sleep 10
 	shekel-cli getinfo
