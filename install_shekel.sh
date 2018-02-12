@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright Cryptojatt(c) 2018
+# Created for shekel.io
+# See https://github.com/shekeltechnologies
+# You may add, modify, remove and reuse anything below this notice
 
 # Usage: 
 # su to root (sudo su -) if not already root
