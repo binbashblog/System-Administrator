@@ -40,7 +40,7 @@ configure () {
 	read -r rpcuser
 	echo -n "enter the rpcpassword		:"
 	read -r rpcpassword
-	echo -n "enter the externalip		:"
+	echo -n "enter the externalip (IP ONLY, do not enter :5500 after the IP)	:"
 	read -r externalip
 	echo -n "enter the masternodeprivatekey		:"
 	read -r masternodeprivkey
@@ -98,43 +98,44 @@ configure () {
 	echo "Then back to the Debug console in your cold wallet"
 	echo "enter		startmasternode alias false <YOUR_MN_ALIAS>"
 	echo ""
-	echo -n "Hit enter once you have started the masternode"
+	sleep 5
+	echo -n "Hit enter once you have started the masternode	:"
+	read -r enter
 	echo ""
 	echo "Waiting a 5 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 4:30 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 4 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 3:30 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 3 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 2:30 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 2 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 1:30 minutes for shekeld to sync...please wait"
-	sleep 30
 	shekel-cli getinfo
+	sleep 30
 	echo "Waiting a 1 minute for shekeld to sync...please wait"
+	shekel-cli getinfo
 	sleep 30
-	shekel-cli getinfo
 	echo "Waiting a 30 seconds for shekeld to sync...please wait"
-	sleep 10
 	shekel-cli getinfo
+	sleep 10
 	echo "Waiting a 20 seconds for shekeld to sync...please wait"
-	sleep 10
 	shekel-cli getinfo
-	echo "Waiting a 10 seconds for shekeld to sync...please wait"
 	sleep 10
+	echo "Waiting a 10 seconds for shekeld to sync...please wait"
 	shekel-cli getinfo
 	echo ""
 	sleep 2
@@ -214,8 +215,8 @@ if [[ `lsb_release -rs` == "16.04" ]] # This checks if lsb_release on the server
 then
 	echo "This is Ubuntu 16.04"
 echo "Are you upgrading? (y/n)		:"	
-read -r upgrade
-	if [ "$upgrade" = n ]
+read -r upgrade2
+	if [ "$upgrade2" = n ]
 		then
 		echo "Installing Shekel on 16.04 from scratch"
 		apt-get update &&
