@@ -301,7 +301,7 @@ echo "You must run this script as root"
 echo ""
 echo "Please wait..."
 sleep 5
-if [[ `lsb_release -rs` == "14.04" ]] # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
+if grep -q 14.04 /etc/*elease # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 14.04"	
 echo "Are you upgrading? (y/n		:"	
@@ -337,7 +337,7 @@ read -r upgrade
 	echo "Upgrades not supported yet" # Will be supported in a later release
 	fi # ends the upgrade check if-statement
 fi # ends the 14.04 if-statement
-if [[ `lsb_release -rs` == "16.04" ]] # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
+if grep -q 16.04 /etc/*elease # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 16.04"
 echo "Are you upgrading? (y/n)		:"	
@@ -402,9 +402,9 @@ read -r upgrade3
 	echo "Upgrades not supported yet" # This will be added in a later version of this script
 	fi # ends the upgrade = y if-statement
 	#		
-	if [ `lsb_release -rs` != "14.04" ] && [ `lsb_release -rs` != "16.04" ] && [ grep -q centos /etc/*elease ]
+	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
 		echo "This is an unsupported OS" 
-		# If the above two lsb_release checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
+		# If the above two checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
 	fi # end unsupported OS check	
 fi # end the lsb_release check if-statement
