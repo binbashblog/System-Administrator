@@ -119,8 +119,10 @@ configure () {
 	echo $current_date_time;
 	echo ""
 	echo "Explorer Block is $Checkblockchain"
-	echo "Shekel block is $Checkblockcount"
+	echo "Local Wallet Block is $Checkblockcount"
 	echo "Difference is $Getdiff"
+	echo "Waiting for wallet to match the Explorer block for it to be in sync"
+	echo "Please wait...."
 	echo "----------------------"
 	done
 	echo ""
