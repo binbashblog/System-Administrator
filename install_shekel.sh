@@ -4,7 +4,7 @@
 # See https://github.com/shekeltechnologies
 # You may add, modify, remove and reuse anything below this notice
 
-# Usage: 
+# Usage:
 # su to root (sudo su -) if not already root
 # wget https://github.com/cryptojatt/System-Administrator/blob/master/install_shekel.sh
 # chmod +x
