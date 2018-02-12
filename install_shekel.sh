@@ -21,8 +21,8 @@
 # The function will then start shekeld and attempt to tell you if your masternode has started
 # depending on whether the blockchain has synced before the timer runs out.
 configure () { 
-	echo "generating .shekel directory"
-	mkdir ~/.shekel & wait $!
+	#echo "generating .shekel directory"
+	#mkdir ~/.shekel & wait $!
 	echo "generating ~/.shekel/shekel.conf" & wait $!
 	echo -e rpcuser= >> ~/.shekel/shekel.conf & wait $!
 	echo -e rpcpassword= >> ~/.shekel/shekel.conf & wait $!
