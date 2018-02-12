@@ -35,7 +35,7 @@ configure () {
 	echo -e externalip= >> ~/.shekel/shekel.conf & wait $!
 	echo -e masternodeaddr= >> ~/.shekel/shekel.conf & wait $!
 	echo -e masternodeprivkey= >> ~/.shekel/shekel.conf & wait $!
-	sleep 1
+	sleep 2
 	echo -n "enter the rpcuser:		:"
 	read -r rpcuser
 	echo -n "enter the rpcpassword		:"
@@ -63,22 +63,23 @@ configure () {
 	echo "masternodeaddr=$externalip:5500" >> ~/.shekel/shekel.conf
 	sed -i '/masternodeprivkey/c\' ~/.shekel/shekel.conf
 	echo "masternodeprivkey=$masternodeprivkey" >> ~/.shekel/shekel.conf
-	sleep 1
+	sleep 2
 	echo "done"
 	echo "Checking firewall ports..."
-	sleep 1
+	sleep 2
 	PORTS='5500'
 	STATUS='ufw status'
 	for PORT in $PORTS; do
 		echo $STATUS | grep "$PORT/tcp" > /dev/null
 		if [ $? -gt 0 ]; then
 			echo "Allowing SHEKEL port $PORT"
+			echo "$PORT has been allowed"
 			ufw allow $PORT/tcp > /dev/null
 		fi
 	done
 	echo ""
 	echo "UFW checked"
-	sleep 1
+	sleep 2
 	echo ""
 	echo "starting shekeld..."
 	shekeld
@@ -89,7 +90,7 @@ configure () {
 	echo "Go to your cold wallet, open Tools > Debug console	"
 	echo "enter 	masternode list-conf     into the console"
 	echo ""
-	sleep 5
+	sleep 10
 	echo "You should see your masternode with a status of MISSING"
 	echo ""
 	sleep 5
@@ -98,25 +99,51 @@ configure () {
 	echo "enter		startmasternode alias false <YOUR_MN_ALIAS>"
 	echo ""
 	echo -n "Hit enter once you have started the masternode"
-	echo "Waiting a minute for shekeld to sync...please wait"
-	sleep 60
+	echo ""
+	echo "Waiting a 5 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 4:30 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 4 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 3:30 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 3 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 2:30 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 2 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 1:30 minutes for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 1 minute for shekeld to sync...please wait"
+	sleep 30
+	echo "Waiting a 30 seconds for shekeld to sync...please wait"
+	sleep 10
+	echo "Waiting a 20 seconds for shekeld to sync...please wait"
+	sleep 10
+	echo "Waiting a 10 seconds for shekeld to sync...please wait"
+	sleep 10
+	shekel-cli getinfo
+	echo ""
+	sleep 2
 	shekel-cli mnsync reset
 	echo "I just ran 	shekel-cli mnsync reset..."
-	sleep 1 
+	sleep 2 
 	echo "This should force the wallet to grab the latest list of current running masternodes"
-	sleep 1
+	sleep 2
 	echo "This usually gets your masternode started"
-	sleep 1
+	sleep 2
 	shekel-cli getinfo
 	shekel-cli masternode status
 	sleep 5
 	echo "Hopefully by now you should see your masternode above" 
-	sleep 1
+	sleep 2
 	echo "if not check your cold wallet's status or try 'shekel-cli masternode status' again, or restart if you still can't see it"
 	echo ""
-	sleep 1
+	sleep 2
 	cat ~/.shekel/debug.log | grep CActiveMasternode::EnableHotColdMasterNode
-	sleep 1
+	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
 	echo "goodbye"
@@ -128,7 +155,7 @@ clear # clear the screen
 echo "###################################################"
 echo "##           SHEKEL Wallet Installer             ##"
 echo "##         For Ubuntu 14.04 or 16.04             ##"
-echo "##                 version 1                     ##"
+echo "##                version 1.2                    ##"
 echo "###################################################"
 echo ""
 echo ""
@@ -161,10 +188,10 @@ read -r upgrade
 		chmod +x shekel-cli shekeld &&
 		mv shekel-cli shekeld /usr/local/bin/
 		echo "Shekel installed"
-		sleep 1
+		sleep 2
 		shekeld
 		echo "Shekeld has been run once, it should have created the .shekel directory"
-		sleep 1
+		sleep 2
 	configure # calls to run the configure function defined right at the top of the script
 	fi
 	if [ "$upgrade" = y ]
@@ -195,10 +222,10 @@ read -r upgrade
 		chmod +x shekel-cli shekeld &&
 		mv shekel-cli shekeld /usr/local/bin/
 		echo "Shekel installed"
-		sleep 1
+		sleep 2
 		shekeld
 		echo "Shekeld has been run once, it should have created the .shekel directory"
-		sleep 1
+		sleep 2
 	configure # calls to run the configure function defined right at the top of the script
 	fi # ends the upgrade = n if-statement
 	if [ "$upgrade" = y ]
@@ -207,6 +234,9 @@ read -r upgrade
 	fi # ends the upgrade = y if-statement
 	
 else # if the lsb_release check fails, proceed to the next portion of the script after this
+	if [ `lsb_release -rs` != "16.04" ] $$ [ `lsb_release -rs` != "16.04" ]
+	then
 		echo "This is an unsupported OS" 
 		# If the above two lsb_release checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
+	fi # end unsupported OS check	
 fi # end the lsb_release check if-statement
