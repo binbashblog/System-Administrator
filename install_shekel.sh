@@ -1,6 +1,7 @@
 #!/bin/bash
 # Copyright Cryptojatt(c) 2018 
 # https://github.com/cryptojatt
+# install_shekel.sh version 1.5
 # 
 # Created for shekel.io
 # See https://github.com/shekeltechnologies
@@ -102,50 +103,36 @@ configure () {
 	echo -n "Hit enter once you have started the masternode	:"
 	read -r enter
 	echo ""
-	echo "Waiting a 5 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
+	echo "The script will now wait for the local wallet to sync with the chain...please wait"
+	Getdiff=5
+	IsShekelSynced() {
+	Checkblockchain=`wget -O - http://shekelchain.com/api/getblockcount`
+	Checkblockcount=`shekel-cli getblockcount`
+	Getdiff=`expr $Checkblockchain - $Checkblockcount`
+	current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
 	sleep 30
-	echo "Waiting a 4:30 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 4 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 3:30 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 3 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 2:30 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 2 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 1:30 minutes for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 1 minute for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 30
-	echo "Waiting a 30 seconds for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 10
-	echo "Waiting a 20 seconds for shekeld to sync...please wait"
-	shekel-cli getinfo
-	sleep 10
-	echo "Waiting a 10 seconds for shekeld to sync...please wait"
-	shekel-cli getinfo
+	}
+	while [[ $Getdiff -gt 1 ]]
+	do
+	IsShekelSynced 2>/dev/null
 	echo ""
-	sleep 2
+	echo $current_date_time;
+	echo ""
+	echo "Explorer Block is $Checkblockchain"
+	echo "Shekel block is $Checkblockcount"
+	echo "Difference is $Getdiff"
+	echo "----------------------"
+	done
+	echo ""
+	echo "Local wallet is now in sync"
 	shekel-cli mnsync reset
 	echo "I just ran 	shekel-cli mnsync reset..."
 	sleep 2 
 	echo "This should force the wallet to grab the latest list of current running masternodes"
 	sleep 2
 	echo "This usually gets your masternode started"
-	sleep 2
+	echo "Waiting for mnsync to complete...please wait"
+	sleep 30
 	shekel-cli getinfo
 	shekel-cli masternode status
 	sleep 5
@@ -158,7 +145,12 @@ configure () {
 	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
+	echo -n "Hit any key to continue	:"
+	rear -r goodbye
+	echo "Wallet configured any synced"
+	echo "Masternode set up"
 	echo "goodbye"
+	sleep 3
 } # end the configure function
 
 
@@ -167,7 +159,7 @@ clear # clear the screen
 echo "###################################################"
 echo "##           SHEKEL Wallet Installer             ##"
 echo "##         For Ubuntu 14.04 or 16.04             ##"
-echo "##                version 1.2                    ##"
+echo "##                version 1.5                    ##"
 echo "###################################################"
 echo ""
 echo ""
