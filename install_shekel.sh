@@ -148,9 +148,9 @@ read -r upgrade
 		apt-get update &&
 		apt-get upgrade -y &&
 		apt-get install wget nano unrar unzip libboost-all-dev libevent-dev software-properties-common libzmq3 libminiupnpc-dev -qy
-		if [ ! grep -q "^deb" /etc/apt/sources.list.d/* 2>/dev/null | grep -q bitcoin/bitcoin 2>/dev/null ]
+		if [ ! -e /etc/apt/sources.list.d/bitcoin-bitcoin-trusty.list ]
 			then 
-		    add-apt-repository ppa:bitcoin/bitcoin -y &&
+		    	add-apt-repository ppa:bitcoin/bitcoin -y
 			apt-get update
 		fi
 		apt-get install libdb4.8-dev libdb4.8++-dev -qy &&
@@ -183,10 +183,10 @@ read -r upgrade
 		apt-get update &&
 		apt-get upgrade -y &&
 		apt-get install wget nano unrar unzip libboost-all-dev libevent-dev software-properties-common libzmq3-dev libminiupnpc-dev -qy
-		if [ ! grep -q "^deb" /etc/apt/sources.list.d/* 2>/dev/null | grep -q bitcoin/bitcoin 2>/dev/null ]
+		if [ ! -e /etc/apt/sources.list.d/bitcoin-ubuntu-bitcoin-xenial.list ]
 			then 
-		    add-apt-repository ppa:bitcoin/bitcoin -y &&
-		apt-get update
+		    	add-apt-repository ppa:bitcoin/bitcoin -y &&
+			apt-get update
 		fi
 		apt-get install libdb4.8-dev libdb4.8++-dev -qy &&
 		wget https://github.com/shekeltechnologies/JewNew/releases/download/1.3.0.0/shekel-Ubuntu16.04-1.3.0.zip &&
