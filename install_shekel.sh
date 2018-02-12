@@ -148,8 +148,8 @@ configure () {
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
 	echo -n "Hit any key to continue	:"
-	rear -r goodbye
-	echo "Wallet configured any synced"
+	read -r goodbye
+	echo "Wallet configured and synced"
 	echo "Masternode set up"
 	echo "goodbye"
 	sleep 3
