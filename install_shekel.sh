@@ -8,7 +8,7 @@
 
 # Usage:
 # su to root (sudo su -) if not already root
-# wget https://github.com/cryptojatt/System-Administrator/blob/master/install_shekel.sh
+# wget https://raw.githubusercontent.com/cryptojatt/System-Administrator/master/install_shekel.sh
 # chmod +x
 # e.g. chmod +x install_shekel.sh
 # then run ./install_shekel.sh
