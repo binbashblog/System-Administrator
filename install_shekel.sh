@@ -246,7 +246,7 @@ read -r upgrade2
 	fi # ends the upgrade = y if-statement
 	
 else # if the lsb_release check fails, proceed to the next portion of the script after this
-	if [ `lsb_release -rs` != "16.04" ] $$ [ `lsb_release -rs` != "16.04" ]
+	if [ `lsb_release -rs` != "14.04" ] && [ `lsb_release -rs` != "16.04" ]
 	then
 		echo "This is an unsupported OS" 
 		# If the above two lsb_release checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
