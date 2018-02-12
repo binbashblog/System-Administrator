@@ -21,7 +21,9 @@
 # The function will then start shekeld and attempt to tell you if your masternode has started
 # depending on whether the blockchain has synced before the timer runs out.
 configure () { 
-	echo "generating ~/.shekel/shekel.conf"
+	echo "generating .shekel directory"
+	mkdir ~/.shekel & wait $!
+	echo "generating ~/.shekel/shekel.conf" & wait $!
 	echo -e rpcuser= >> ~/.shekel/shekel.conf & wait $!
 	echo -e rpcpassword= >> ~/.shekel/shekel.conf & wait $!
 	echo -e rpcport=5501 >> ~/.shekel/shekel.conf & wait $!
@@ -118,11 +120,11 @@ configure () {
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
 	echo "goodbye"
-}
+} # end the configure function
 
 
 
-clear
+clear # clear the screen
 echo "###################################################"
 echo "##           SHEKEL Wallet Installer             ##"
 echo "##         For Ubuntu 14.04 or 16.04             ##"
@@ -142,6 +144,7 @@ read -r upgrade
 	if [ "$upgrade" = n ]
 		then
 		echo "Installing Shekel on 14.04.from scratch"
+		# Patches the system, installs required packages and repositories
 		apt-get update &&
 		apt-get upgrade -y &&
 		apt-get install wget nano unrar unzip libboost-all-dev libevent-dev software-properties-common libzmq3 libminiupnpc-dev -qy
@@ -151,6 +154,7 @@ read -r upgrade
 			apt-get update
 		fi
 		apt-get install libdb4.8-dev libdb4.8++-dev -qy &&
+		# Downloads and extracts the current latest release, moves to the correct location then runs shekeld
 		wget https://github.com/shekeltechnologies/JewNew/releases/download/1.3.0.0/shekel-linux-1.3.0.zip &&
 		unzip shekel-linux-1.3.0.zip &&
 		rm shekel-linux-1.3.0.zip &&
@@ -161,11 +165,11 @@ read -r upgrade
 		shekeld
 		echo "Shekeld has been run once, it should have created the .shekel directory"
 		sleep 1
-	configure
+	configure # calls to run the configure function defined right at the top of the script
 	fi
 	if [ "$upgrade" = y ]
 	then
-	echo "Upgrades not supported yet"
+	echo "Upgrades not supported yet" # Will be supported in a later release
 	fi # ends the upgrade check if-statement
 fi # ends the 14.04 if-statement
 if [[ `lsb_release -rs` == "16.04" ]] # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
@@ -195,7 +199,7 @@ read -r upgrade
 		shekeld
 		echo "Shekeld has been run once, it should have created the .shekel directory"
 		sleep 1
-	configure
+	configure # calls to run the configure function defined right at the top of the script
 	fi # ends the upgrade = n if-statement
 	if [ "$upgrade" = y ]
 	then
