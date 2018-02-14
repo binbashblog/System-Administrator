@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright Cryptojatt(c) 2018 
 # https://github.com/cryptojatt
-# install_shekel.sh version 2.0
+# install_shekel.sh version 1.8
 # Donation address: JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU
 # 
 # Created for shekel.io
@@ -390,7 +390,7 @@ clear # clear the screen
 echo "###################################################"
 echo "##           SHEKEL Wallet Installer             ##"
 echo "##     For Ubuntu 14.04 or 16.04 or CentOS7      ##"
-echo "##                version 2.0                    ##"
+echo "##                version 1.8                    ##"
 echo "##   Donate:JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   ##"
 echo "##                                               ##"
 echo "##         Copyright Cryptojatt(c) 2018          ##" 
