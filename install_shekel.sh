@@ -391,7 +391,7 @@ amiroot () {
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root"
    echo "Run this script again as root or sudo"
-   echo "e.g sudo ./install_shekel.sh
+   echo "e.g sudo ./install_shekel.sh"
    echo "this script will now exit"
    exit 1
 fi
