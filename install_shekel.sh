@@ -409,7 +409,7 @@ echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
 echo ""
 sleep 10
 PS3='Please enter your choice: '
-options=("Option 1" "Option 2" "Option 3" "Quit")
+options=("Install Shekel Wallet & Set Up Masternode" "Upgrade Shekel Wallet & Set Up Masternode" "Install Systemd Script" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
