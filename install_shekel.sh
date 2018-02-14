@@ -385,46 +385,49 @@ upgrade_masternode () {
 	echo "Upgrades not supported yet" # This will be added in a later version of this script
 }
 
-
-clear # clear the screen
-echo "###################################################"
-echo "##           SHEKEL Wallet Installer             ##"
-echo "##     For Ubuntu 14.04 or 16.04 or CentOS7      ##"
-echo "##                version 1.8                    ##"
-echo "##   Donate:JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   ##"
-echo "##                                               ##"
-echo "##         Copyright Cryptojatt(c) 2018          ##" 
-echo "##        https://github.com/cryptojatt          ##"
-echo "##            Created for shekel.io              ##"
-echo "##   See https://github.com/shekeltechnologies   ##"
-echo "###################################################"
+menu () {
+while :
+do
+    clear
+    
+echo "==================================================="
+echo "==           SHEKEL Wallet Installer             =="
+echo "==     For Ubuntu 14.04 or 16.04 or CentOS7      =="
+echo "==                version 1.8                    =="
+echo "==   Donate:JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   =="
+echo "==                                               =="
+echo "==         Copyright Cryptojatt(c) 2018          ==" 
+echo "==        https://github.com/cryptojatt          =="
+echo "==            Created for shekel.io              =="
+echo "==   See https://github.com/shekeltechnologies   =="
+echo "---------------------------------------------------"
 echo ""
-sleep 5
-echo ""
-echo "Script initialising...please wait..."
 echo "You must run this script as root"
 echo ""
 echo "If this helped you please consider donating here for my efforts	:" 
 echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
 echo ""
-sleep 10
-PS3='Please enter your choice: '
-options=("Install Shekel Wallet & Set Up Masternode" "Upgrade Shekel Wallet & Set Up Masternode" "Install Systemd Script" "Quit")
-select opt in "${options[@]}"
-do
-    case $opt in
-        "Install Shekel Wallet & Set Up Masternode")
-            install_masternode
-            ;;
-        "Upgrade Shekel Wallet & Set Up Masternode")
-            upgrade_masternode
-            ;;
-        "Install Systemd Script")
-            echo "To be added"
-            ;;
-        "Quit")
-            break
-            ;;
-        *) echo invalid option;;
+sleep 2
+cat<<EOF
+    Please enter your choice:
+
+    Install Shekel Wallet & Set Up Masternode (1)
+    Upgrade Shekel Wallet & Set Up Masternode (2)
+    Install Systemd Script		      (3)
+           				      (Q)uit
+    ------------------------------
+EOF
+    read -n1 -s
+    case "$REPLY" in
+    "1")  install_masternode ;;
+    "2")  upgrade_masternode ;;
+    "3")  echo "To be added" ;;
+    "Q")  exit                      ;;
+    "q")  echo "case sensitive!!"   ;; 
+     * )  echo "invalid option"     ;;
     esac
+    sleep 1
 done
+} # end menu while loop
+
+menu #start menu function
