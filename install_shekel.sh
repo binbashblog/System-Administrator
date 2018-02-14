@@ -1,26 +1,29 @@
 #!/bin/bash
 # Copyright Cryptojatt(c) 2018 
 # https://github.com/cryptojatt
-# install_shekel.sh version 1.6
+# install_shekel.sh version 2.0
+# Donation address: JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU
 # 
 # Created for shekel.io
 # See https://github.com/shekeltechnologies
 # You may add, modify, remove and reuse anything below this notice
+# please retain this notice and donation address
 
 # Usage:
+#
 # su to root (sudo su -) if not already root
 # wget https://raw.githubusercontent.com/cryptojatt/System-Administrator/master/install_shekel.sh
-# chmod +x
-# e.g. chmod +x install_shekel.sh
+# chmod +x install_shekel.sh
 # then run ./install_shekel.sh
 
 # Requirements
-# Ubuntu 14.04 or Ubuntu 16.04
+# Ubuntu 14.04 or Ubuntu 16.04 or CentOS7
 # Basic bash knowledge in executing shell scripts
 
-# Create a function to configure the shekel.conf file through user input and then allow port 5500 through the UFW firewall
-# The function will then start shekeld and attempt to tell you if your masternode has started
-# depending on whether the blockchain has synced before the timer runs out.
+# Create a function to configure the shekel.conf file through user input and then allow port 5500 through the firewall
+# The function will then start shekeld, check the block explorer against the wallets sync progress until it is it sync
+# and attempt to start up your masternode, and then verify if your masternode has started
+
 configure_ubuntu () { 
 	#echo "generating .shekel directory"
 	#mkdir ~/.shekel & wait $!
@@ -147,10 +150,13 @@ configure_ubuntu () {
 	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
+	echo ""
+	echo "If this helped you please consider donating here for my efforts	:"
+	echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
+	echo ""
 	echo -n "Hit any key to continue	:"
 	read -r goodbye
-	echo "Wallet configured and synced"
-	echo "Masternode set up"
+	echo ""
 	echo "goodbye"
 	sleep 3
 } # end the configure function
@@ -279,35 +285,23 @@ configure_centos () {
 	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
+	echo "Wallet configured and synced"
+	echo "Masternode has been set up"
+	echo ""
+	echo "If this helped you please consider donating here for my efforts	:"
+	echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
+	echo ""
 	echo -n "Hit any key to continue	:"
 	read -r goodbye
-	echo "Wallet configured and synced"
-	echo "Masternode set up"
+	echo ""
 	echo "goodbye"
 	sleep 3
 } # end the configure function
 
-
-
-clear # clear the screen
-echo "###################################################"
-echo "##           SHEKEL Wallet Installer             ##"
-echo "##         For Ubuntu 14.04 or 16.04             ##"
-echo "##                version 1.5                    ##"
-echo "###################################################"
-echo ""
-echo ""
-echo "You must run this script as root"
-echo ""
-echo "Please wait..."
-sleep 5
+install_masternode () {
 if grep -q 14.04 /etc/*elease # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 14.04"	
-echo "Are you upgrading? (y/n		:"	
-read -r upgrade
-	if [ "$upgrade" = n ]
-		then
 		echo "Installing Shekel on 14.04.from scratch"
 		# Patches the system, installs required packages and repositories
 		apt-get update &&
@@ -331,19 +325,10 @@ read -r upgrade
 		echo "Shekeld has been run once, it should have created the .shekel directory"
 		sleep 2
 	configure_ubuntu # calls to run the configure function defined right at the top of the script
-	fi
-	if [ "$upgrade" = y ]
-	then
-	echo "Upgrades not supported yet" # Will be supported in a later release
-	fi # ends the upgrade check if-statement
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease # This checks if lsb_release on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 16.04"
-echo "Are you upgrading? (y/n)		:"	
-read -r upgrade2
-	if [ "$upgrade2" = n ]
-		then
 		echo "Installing Shekel on 16.04 from scratch"
 		apt-get update &&
 		apt-get upgrade -y &&
@@ -352,7 +337,7 @@ read -r upgrade2
 			then 
 		    	add-apt-repository ppa:bitcoin/bitcoin -y &&
 			apt-get update
-		fi
+		fi # ends ppa if-statement
 		apt-get install libdb4.8-dev libdb4.8++-dev -qy &&
 		wget https://github.com/shekeltechnologies/JewNew/releases/download/1.3.0.0/shekel-Ubuntu16.04-1.3.0.zip &&
 		unzip shekel-Ubuntu16.04-1.3.0.zip &&
@@ -365,20 +350,11 @@ read -r upgrade2
 		echo "Shekeld has been run once, it should have created the .shekel directory"
 		sleep 2
 	configure_ubuntu # calls to run the configure function defined right at the top of the script
-	fi # ends the upgrade = n if-statement
-	if [ "$upgrade" = y ]
-	then
-	echo "Upgrades not supported yet" # This will be added in a later version of this script
-	fi # ends the upgrade = y if-statement
-	
-else # if the lsb_release check fails, proceed to the next portion of the script after this
+		
+fi # ends the 16.04 if-statement
 if [ grep -q centos /etc/*elease ]
 then
 	echo "This is centos"
-echo "Are you upgrading? (y/n)		:"	
-read -r upgrade3
-	if [ "$upgrade3" = n ]
-		then
 		echo "Installing Shekel on CentOS from scratch"
 		yum install -y epel-release &&
 		yum clean all &&
@@ -396,15 +372,59 @@ read -r upgrade3
 		echo "Shekeld has been run once, it should have created the .shekel directory"
 		sleep 2
 	configure_centos # calls to run the configure function defined right at the top of the script
-	fi # ends the upgrade = n if-statement
-	if [ "$upgrade" = y ]
-	then
-	echo "Upgrades not supported yet" # This will be added in a later version of this script
-	fi # ends the upgrade = y if-statement
 	#		
 	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
 		echo "This is an unsupported OS" 
 		# If the above two checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
 	fi # end unsupported OS check	
-fi # end the lsb_release check if-statement
+fi # end the centos check if-statement
+} # end the masternode_install function
+
+upgrade_masternode () {
+	echo "Upgrades not supported yet" # This will be added in a later version of this script
+}
+
+
+clear # clear the screen
+echo "###################################################"
+echo "##           SHEKEL Wallet Installer             ##"
+echo "##     For Ubuntu 14.04 or 16.04 or CentOS7      ##"
+echo "##                version 2.0                    ##"
+echo "##   Donate:JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   ##"
+echo "##                                               ##"
+echo "##         Copyright Cryptojatt(c) 2018          ##" 
+echo "##        https://github.com/cryptojatt          ##"
+echo "##            Created for shekel.io              ##"
+echo "##   See https://github.com/shekeltechnologies   ##"
+echo "###################################################"
+echo ""
+sleep 5
+echo ""
+echo "Script initialising...please wait..."
+echo "You must run this script as root"
+echo ""
+echo "If this helped you please consider donating here for my efforts	:" 
+echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
+echo ""
+sleep 10
+PS3='Please enter your choice: '
+options=("Option 1" "Option 2" "Option 3" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Install Shekel Wallet & Set Up Masternode")
+            install_masternode
+            ;;
+        "Upgrade Shekel Wallet & Set Up Masternode")
+            upgrade_masternode
+            ;;
+        "Install Systemd Script")
+            echo "To be added"
+            ;;
+        "Quit")
+            break
+            ;;
+        *) echo invalid option;;
+    esac
+done
