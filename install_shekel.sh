@@ -404,7 +404,7 @@ echo "---------------------------------------------------"
 echo ""
 echo "You must run this script as root"
 echo ""
-echo "If this helped you please consider donating here for my efforts	:" 
+echo "Please consider donating here for my efforts	:" 
 echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
 echo ""
 sleep 2
