@@ -12,9 +12,11 @@
 # Usage:
 #
 # su to root (sudo su -) if not already root
+# or run with sudo
 # wget https://raw.githubusercontent.com/cryptojatt/System-Administrator/master/install_shekel.sh
 # chmod +x install_shekel.sh
 # then run ./install_shekel.sh
+# or sudo ./install_shekel.sh
 
 # Requirements
 # Ubuntu 14.04 or Ubuntu 16.04 or CentOS7
@@ -385,6 +387,15 @@ upgrade_masternode () {
 	echo "Upgrades not supported yet" # This will be added in a later version of this script
 }
 
+amiroot () {
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root"
+   echo "Run this script again as root or sudo (sudo su -) or (su -)"
+   echo "this script will now exit"
+   exit 1
+fi
+}
+
 menu () {
 while :
 do
@@ -402,12 +413,11 @@ echo "==            Created for shekel.io              =="
 echo "==   See https://github.com/shekeltechnologies   =="
 echo "---------------------------------------------------"
 echo ""
-echo "You must run this script as root"
-echo ""
 echo "Please consider donating here for my efforts	:" 
 echo "JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU"
 echo ""
 sleep 2
+amiroot
 cat<<EOF
     Please enter your choice:
 
