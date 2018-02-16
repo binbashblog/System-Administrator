@@ -656,24 +656,23 @@ trap : 0
 
 EOF
 
-if [ -z "$email" ]
+if [ "$email" != "" ]
 then
 	chmod +x ~/check.sh
-	sudo -u crontab -l > mycron
-	echo "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s "Shekel Masternode status" $email"
-	sudo -u echo -e "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s 'Shekel Masternode status' $email" >> mycron & wait $!
-	sudo -u crontab mycron
-	sudo -u rm mycron
+	sudo -u $USER crontab -l > mycron
+	echo "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s 'Shekel Masternode status' $email"
+	sudo -u $USER echo -e "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s 'Shekel Masternode status' $email" >> mycron
+	sudo -u $USER crontab mycron
+	sudo -u $USER rm mycron
 else
 	chmod +x ~/check.sh
-	sudo -u crontab -l > mycron
+	sudo -u $USER crontab -l > mycron
 	echo "*/30 * * * * ~/check.sh"
-	sudo -u echo -e "*/30 * * * * ~/check.sh" >> mycron  & wait $!
-	sudo -u crontab mycron
-	sudo -u rm mycron
+	sudo -u $USER echo -e "*/30 * * * * ~/check.sh" >> mycron
+	sudo -u $USER crontab mycron
+	sudo -u $USER rm mycron
 fi
 }
-
 
 amiroot () {
 if [[ $EUID -ne 0 ]]; then
