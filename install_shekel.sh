@@ -82,6 +82,16 @@ configure_ubuntu () {
 			ufw allow $PORT/tcp > /dev/null
 		fi
 	done
+	echo "Checking SSH port in config..."
+	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
+	echo "SSH port is port $ssh..."
+	
+	if [ "ufw status | grep -q $ssh/tcp" ]; then
+		echo "Port $ssh already in UFW"
+	else
+		echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
+		ufw allow $ssh/tcp > /dev/null
+	fi
 	echo ""
 	echo "UFW checked"
 	sleep 2
@@ -212,12 +222,23 @@ configure_centos () {
 	then 
 		echo "Port 5500 already in iptables"
 	else
-		echo "Adding iptables rule - iptables -I INPUT -p tcp --dport 5500 -j ACCEPT"
+		echo "Adding iptables rules - iptables -I INPUT -p tcp --dport 5500 -j ACCEPT"
 		iptables -I INPUT -p tcp --dport 5500 -j ACCEPT
 	service iptables save
 	fi
+	echo "Checking SSH port in config..."
+	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
+	echo "SSH port is port $ssh..."
+	if [ "iptables -L INPUT -nv | grep -q $ssh" ]
+	then
+		etho "Port $ssh already in iptables"
+	else
+		echo "Adding ssh port to iptable rules - iptables -I INPUT -p tcp --dport $ssh -j ACCEPT"
+		iptables -I INPUT -p tcp --dport $ssh -j ACCEPT
+	service iptables save
+	fi
 	echo ""
-	echo "IPTables checked"
+	echo "IPtables checked and saved"
 	sleep 2
 	echo ""
 	echo "starting shekeld..."
