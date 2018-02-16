@@ -488,6 +488,7 @@ read -r add
 echo "Enter your email address if you want notifications	:"
 echo "You will need sendmail installed and configured"
 read -r email
+touch /home/$USER/check.sh
 cat <<EOF  > /home/$USER/check.sh
 #!/bin/bash
 
