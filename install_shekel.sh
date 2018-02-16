@@ -582,7 +582,7 @@ if [[ $check == *"POS_ERROR"* ]]; then
    echo "POS ERROR!"
    systemctl stop shekeld
    sleep 30
-   rm /home/$USER/.shekel/mncache.dat -rf
+   rm ~/.shekel/mncache.dat -rf
    systemctl start shekel
    sleep 30
 echo ""
@@ -659,16 +659,18 @@ EOF
 if [ -z "$email" ]
 then
 	chmod +x ~/check.sh
-	crontab -l > mycron
+	sudo -u crontab -l > mycron
 	echo "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s "Shekel Masternode status" $email"
-	crontab mycron
-	rm mycron
+	sudo -u echo -e "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s 'Shekel Masternode status' $email" >> mycron & wait $!
+	sudo -u crontab mycron
+	sudo -u rm mycron
 else
 	chmod +x ~/check.sh
-	crontab -l > mycron
+	sudo -u crontab -l > mycron
 	echo "*/30 * * * * ~/check.sh"
-	crontab mycron
-	rm mycron
+	sudo -u echo -e "*/30 * * * * ~/check.sh" >> mycron  & wait $!
+	sudo -u crontab mycron
+	sudo -u rm mycron
 fi
 }
 
