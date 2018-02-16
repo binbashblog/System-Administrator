@@ -419,8 +419,8 @@ User=$USER
 
 
 Type=forking
-PIDFile=/home/$USER/.shekel/shekeld.pid
-ExecStart=/usr/local/bin/shekeld -daemon -pid=/home/$USER/.shekel/shekeld.pid -conf=/home/$USER/.shekel/shekel.conf -datadir=/home/$USER/.shekel
+PIDFile=~/.shekel/shekeld.pid
+ExecStart=/usr/local/bin/shekeld -daemon -pid=~/.shekel/shekeld.pid -conf=~/.shekel/shekel.conf -datadir=~/.shekel
 #-disablewallet
 
 Restart=always
@@ -488,8 +488,8 @@ read -r add
 echo "Enter your email address if you want notifications	:"
 echo "You will need sendmail installed and configured"
 read -r email
-touch /home/$USER/check.sh
-cat <<EOF  > /home/$USER/check.sh
+touch ~/check.sh
+cat <<EOF  > ~/check.sh
 #!/bin/bash
 
 ipaddr=`curl -s http://whatismyip.akamai.com`
@@ -503,7 +503,7 @@ abort()
 === Shekeld not running...restarting ===
 ========================================
 '
-rm /home/$USER/.shekel/mncache.dat -rf
+rm ~/.shekel/mncache.dat -rf
 systemctl start shekeld
 sleep 30
 echo ""
@@ -525,7 +525,7 @@ echo "==== masternode list OUTPUT ===="
 echo ""
 echo ""
 echo "==== debug.log OUTPUT ===="
-cat /home/$USER/.shekel/debug.log | grep CActiveMasternode::EnableHotColdMasterNode
+cat ~/.shekel/debug.log | grep CActiveMasternode::EnableHotColdMasterNode
 echo "==== debug.log OUTPUT ===="
 echo ""
 echo ""
@@ -658,15 +658,15 @@ EOF
 
 if [ -z "$email" ]
 then
-	chmod +x /home/$USER/chech.sh
+	chmod +x ~/check.sh
 	crontab -l > mycron
-	echo "*/30 * * * * /home/$USER/check.sh 2>&1 | tee output.exe | mail -s "Shekel Masternode status" $email"
+	echo "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s "Shekel Masternode status" $email"
 	crontab mycron
 	rm mycron
 else
-	chmod +x /home/$USER/chech.sh
+	chmod +x ~/check.sh
 	crontab -l > mycron
-	echo "*/30 * * * * /home/$USER/check.sh"
+	echo "*/30 * * * * ~/check.sh"
 	crontab mycron
 	rm mycron
 fi
