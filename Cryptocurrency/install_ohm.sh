@@ -36,7 +36,7 @@ cli="ohmc-cli"
 gitdir="ohmcoin"
 GITREPO="https://github.com/theohmproject/ohmcoin.git"
 getblockcount="http://explore.ohmcoin.org/api/getblockcount"
-PORTS="52020"
+PORT="52020"
 externalip="curl -s http://whatismyip.akamai.com"
 ##### CHANGABLE VARIABLES #####
 
@@ -76,9 +76,9 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	sleep 2
 	echo "Using your answers to generate the .conf"
 	#sed -i '/externalip/c\' ~/.$datadir/$datadir.conf
-	#echo "externalip=$externalip:$PORTS" >> ~/.$datadir/$datadir.conf
+	#echo "externalip=$externalip:$PORT" >> ~/.$datadir/$datadir.conf
 	#sed -i '/karmanodeaddr/c\' ~/.$datadir/$datadir.conf
-	#echo "karmanodeaddr=$externalip:$PORTS" >> ~/.$datadir/$datadir.conf
+	#echo "karmanodeaddr=$externalip:$PORT" >> ~/.$datadir/$datadir.conf
 	sed -i '/karmanodeprivkey/c\' ~/.$datadir/$datadir.conf
 	echo "karmanodeprivkey=$karmanodeprivkey" >> ~/.$datadir/$datadir.conf
 	sleep 2
@@ -88,15 +88,13 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 ufw () {	
 	echo "Checking firewall ports..."
 	sleep 2
-	STATUS='ufw status'
-	for PORT in $PORTS; do
-		echo $STATUS | grep "$PORT/tcp" > /dev/null
-		if [ $? -gt 0 ]; then
-			echo "Allowing port $PORT"
-			echo "$PORT has been allowed"
-			ufw allow $PORT/tcp > /dev/null
-		fi
-	done
+	if [ "ufw status | grep -q $PORT/tcp" ]; then
+		echo "Port $PORT already in UFW"
+	else
+		echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
+		echo "$PORT has been allowed"
+		ufw allow $PORT/tcp > /dev/null
+	fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo "SSH port is port $ssh..."
@@ -107,7 +105,7 @@ ufw () {
 		ufw allow $ssh/tcp > /dev/null
 	fi
 	echo ""
-	$STATUS
+	ufw status
 	echo "UFW checked"
 	sleep 2
 	echo ""
