@@ -234,7 +234,7 @@ iptables () {
 	else
 		echo "Adding iptables rules - iptables -I INPUT -p tcp --dport $PORTS -j ACCEPT"
 		iptables -I INPUT -p tcp --dport $PORTS -j ACCEPT
-	service iptables save
+		service iptables save
 	fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
@@ -245,7 +245,7 @@ iptables () {
 	else
 		echo "Adding ssh port to iptable rules - iptables -I INPUT -p tcp --dport $ssh -j ACCEPT"
 		iptables -I INPUT -p tcp --dport $ssh -j ACCEPT
-	service iptables save
+		service iptables save
 	fi
 	echo ""
 	echo "IPtables checked and saved"
@@ -297,7 +297,7 @@ then
    	add-apt-repository ppa:bitcoin/bitcoin -y
 	apt-get update
 fi # ends ppa if-statement
-apt-get install libdb4.8-dev libdb4.8++-dev -qy &&
+apt-get install libdb4.8-dev libdb4.8++-dev -qy
 }
 
 yum () {
@@ -326,30 +326,30 @@ install () {
 if grep -q 14.04 /etc/*elease
 then
 	echo "This is Ubuntu 14.04"	
-		echo "Installing $COIN on 14.04.from scratch"
-		$libzmq = "libzmq3"
-		apt
-		ufw
+	echo "Installing $COIN on 14.04.from scratch"
+	$libzmq = "libzmq3"
+	apt
+	ufw
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease
 then
 	echo "This is Ubuntu 16.04"
-		echo "Installing $COIN on 16.04 from scratch"
-		$libzmq = "libzmq3-dev"
-		apt
-		ufw
+	echo "Installing $COIN on 16.04 from scratch"
+	$libzmq = "libzmq3-dev"
+	apt
+	ufw
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease
 then
 	echo "This is CentOS"
-		echo "Installing $COIN on CentOS from scratch"
-		yum
-		iptables
-	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
-	then
-		echo "This is an unsupported OS" 
-	fi # end unsupported OS check
-fi # end the centos check if-statement
+	echo "Installing $COIN on CentOS from scratch"
+	yum
+	iptables
+fi
+if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
+then
+	echo "This is an unsupported OS" 
+fi # end unsupported OS check
 git_install
 configure
 start_karmanode
@@ -401,8 +401,7 @@ upgrade_karmanode () {
 			fi # end if RESULT3
 		fi # end if RESULT2
 	fi	# end if shekel.service exists
-
-	if grep -q 14.04 /etc/*elease # This checks if the release file on the server reports Ubuntu 14.04, if not it skips this section
+if grep -q 14.04 /etc/*elease # This checks if the release file on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 14.04"	
 		echo "Upgrading $COIN on 14.04"
@@ -427,6 +426,7 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		fi
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease # This checks if any release file on the server reports Ubuntu 16.04, if not it skips this section
 then
@@ -453,6 +453,7 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		fi
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease # This checks if any release file on the server reports Centos, if not it skips this section
 then
@@ -475,13 +476,14 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		fi
 	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
 		echo "This is an unsupported OS" 
 		# If the above two checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
 	fi # end unsupported OS check	
 fi # end the centos check if-statement
-} # end the karmanode_upgrade function
+}  # end the karmanode_upgrade function
 
 
 install_service () {
@@ -765,23 +767,23 @@ menu () {
 while :
 do
     clear
-echo "==================================================="
-echo "==          karmanode Wallet Installer           =="
-echo "==     For Ubuntu 14.04 or 16.04 or CentOS7      =="
-echo "==                version 1.0                    =="
-echo "==             			               =="
-echo "== Please donate:				       =="
-echo "== Bitcoin: 19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT   =="
-echo "== Litecoin: LiBKYy6ZpCzTPpkqYaHPmjfuiQiLvxkNDE  =="
-echo "== Shekel: JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU    =="
-echo "==                                               =="
-echo "==         Copyright Cryptojatt(c) 2018          ==" 
-echo "==        https://github.com/cryptojatt          =="
-echo "---------------------------------------------------"
+echo "===================================================="
+echo "==          karmanode Wallet Installer            =="
+echo "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
+echo "==                  version 1.0                   =="
+echo "==                                                =="
+echo "== Please donate:                                 =="
+echo "== Bitcoin: 19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT    =="
+echo "== Litecoin: LiBKYy6ZpCzTPpkqYaHPmjfuiQiLvxkNDE   =="
+echo "== Shekel: JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU     =="
+echo "==                                                =="
+echo "==         Copyright Cryptojatt(c) 2018           ==" 
+echo "==        https://github.com/cryptojatt           =="
+echo "----------------------------------------------------"
 echo ""
 echo "Please consider donating for my efforts	:" 
 echo ""
-sleep 2
+sleep 1
 amiroot
 cat <<EOF
     Please enter your choice:
