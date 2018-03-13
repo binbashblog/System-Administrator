@@ -107,6 +107,7 @@ ufw () {
 		ufw allow $ssh/tcp > /dev/null
 	fi
 	echo ""
+	$STATUS
 	echo "UFW checked"
 	sleep 2
 	echo ""
