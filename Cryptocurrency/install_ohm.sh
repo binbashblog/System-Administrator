@@ -85,20 +85,21 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "done"
 }	
 	
-ufw () {	
+ufw () {
 	echo "Checking firewall ports..."
 	sleep 2
-	if [ "ufw status | grep -q $PORT/tcp" ]; then
+	CHECK=`ufw status | grep -q $PORT`
+	if [ -z $CHECK ]; then
 		echo "Port $PORT already in UFW"
 	else
 		echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
-		echo "$PORT has been allowed"
 		ufw allow $PORT/tcp > /dev/null
 	fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo "SSH port is port $ssh..."
-	if [ "ufw status | grep -q $ssh/tcp" ]; then
+	CHECK2=`ufw status | grep -q $ssh`
+	if [ -z $CHECK2 ]; then
 		echo "Port $ssh already in UFW"
 	else
 		echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
@@ -116,7 +117,7 @@ start_karmanode () {
 	$daemon
 	echo "Waiting for $DAEMON to start and begin to sync..."
 	sleep 2
-	echo "While we're waiting for the chain to sync, continue with the following steps	:"
+	echo "While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
 	echo "Go to your cold wallet, open Tools > Debug console	"
 	echo "enter 	karmanode list-conf     into the console"
