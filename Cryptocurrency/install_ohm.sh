@@ -88,12 +88,12 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 ufw () {
 	echo "Checking firewall ports..."
 	sleep 2
-	CHECK=`ufw status | grep -q $PORT`
+	CHECK="ufw status | grep -q $PORT"
 	if [ -z $CHECK ]; then
 		echo "Port $PORT already in UFW"
 	else
 		echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
-		ufw allow $PORT/tcp > /dev/null
+		ufw allow $PORT/tcp
 	fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
@@ -110,6 +110,7 @@ ufw () {
 	echo "UFW checked"
 	sleep 2
 	echo ""
+	clear
 }
 
 start_karmanode () {
