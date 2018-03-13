@@ -327,7 +327,7 @@ if grep -q 14.04 /etc/*elease
 then
 	echo "This is Ubuntu 14.04"	
 	echo "Installing $COIN on 14.04.from scratch"
-	$libzmq="libzmq3"
+	libzmq="libzmq3"
 	apt
 	ufw
 fi # ends the 14.04 if-statement
@@ -335,7 +335,7 @@ if grep -q 16.04 /etc/*elease
 then
 	echo "This is Ubuntu 16.04"
 	echo "Installing $COIN on 16.04 from scratch"
-	$libzmq="libzmq3-dev"
+	libzmq="libzmq3-dev"
 	apt
 	ufw
 fi # ends the 16.04 if-statement
@@ -405,7 +405,7 @@ if grep -q 14.04 /etc/*elease # This checks if the release file on the server re
 then
 	echo "This is Ubuntu 14.04"	
 		echo "Upgrading $COIN on 14.04"
-		$libzmq="libzmq3"
+		libzmq="libzmq3"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
 		apt
@@ -432,7 +432,7 @@ if grep -q 16.04 /etc/*elease # This checks if any release file on the server re
 then
 	echo "This is Ubuntu 16.04"
 		echo "Installing $COIN on 16.04 from scratch"
-		$libzmq="libzmq3-dev"
+		libzmq="libzmq3-dev"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
 		apt
