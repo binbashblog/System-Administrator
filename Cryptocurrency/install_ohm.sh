@@ -105,11 +105,11 @@ else
 	
 check_ufw () {	
 clear
-	echo "Checking firewall ports..."
+  echo "Checking firewall ports..."
 	sleep 2
 	STATUS='ufw status'
 	echo $STATUS | grep "$PORT/tcp" > /dev/null
-		if [ $? -gt 0 ]; then
+	  if [ $? -gt 0 ]; then
 			echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
 			ufw allow $PORT/tcp > /dev/null
 			echo "$PORT has been allowed"
@@ -120,15 +120,16 @@ clear
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo "SSH port is port $ssh..."
 	if [ "ufw status | grep -q $ssh/tcp" ]; then
-		echo "Port $ssh already in UFW"
-	else
-		echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
-		ufw allow $ssh/tcp > /dev/null
-	fi
-	echo ""
-	echo "UFW checked"
-	sleep 2
-	echo ""
+          echo "Port $ssh already in UFW"
+  else
+          echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
+          ufw allow $ssh/tcp > /dev/null
+ fi
+ echo ""
+ echo "UFW checked"
+ sleep 2
+ echo ""
+ clear
 }
 
 start_karmanode () {
@@ -137,7 +138,7 @@ clear
 	$daemon
 	echo "Waiting for $DAEMON to start and begin to sync..."
 	sleep 2
-	echo "While we're waiting for the chain to sync, continue with the following steps	:"
+	echo "While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
 	echo "Go to your cold wallet, open Tools > Debug console	"
 	echo "enter 	karmanode list-conf     into the console"
