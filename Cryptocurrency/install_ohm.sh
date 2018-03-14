@@ -65,7 +65,7 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#echo -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e karmanodeprivkey= >> ~/.$datadir/$datadir.conf & wait $!
 	sleep 2
-	echo "Your rpcuser is $rpcuser
+	echo "Your rpcuser is $rpcuser"
 	echo ""
 	echo "Your rpcuser is $rpcpassword"
 	echo "Make sure to save your rpc username and password for your cold wallet later"
