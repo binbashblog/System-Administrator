@@ -812,7 +812,7 @@ echo "==         Copyright Cryptojatt(c) 2018           =="
 echo "==        https://github.com/cryptojatt           =="
 echo "----------------------------------------------------"
 echo ""
-echo "Please consider donating for my time and effort in put into this	:" 
+echo "Please consider donating for my time and effort I put into this	:" 
 echo ""
 sleep 1
 amiroot
