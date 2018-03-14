@@ -42,6 +42,12 @@ externalip="curl -s http://whatismyip.akamai.com"
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
 configure () { 
+clear
+echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
+if [ -f ~/.$datadir/$datadir.conf ]; then
+        echo "$datadir.conf exists!"
+        echo "Proceeding with configuring masternode..."
+        sleep 2
 rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating ~/.$datadir/$datadir.conf" & wait $!
@@ -59,9 +65,9 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#echo -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e karmanodeprivkey= >> ~/.$datadir/$datadir.conf & wait $!
 	sleep 2
-	echo "Your rpcuser is $password"
+	echo "Your rpcuser is $rpcuser
 	echo ""
-	echo "Your rpcuser is $password2"
+	echo "Your rpcuser is $rpcpassword"
 	echo "Make sure to save your rpc username and password for your cold wallet later"
 	echo -n "Press any key to continue"
 	echo -n "enter the karmanodeprivatekey		:"
@@ -82,38 +88,52 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	sed -i '/karmanodeprivkey/c\' ~/.$datadir/$datadir.conf
 	echo "karmanodeprivkey=$karmanodeprivkey" >> ~/.$datadir/$datadir.conf
 	sleep 2
+	echo "Configuration completed successfully"
+else
+        echo "$datadir.conf not found"
+	echo "This means the daemon install failed and the daemon didn't run properly"
+	echo "Please re-run the script or check the git repo paths are correct"
+	echo "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
+        echo -n "Hit any key to continue        :"
+        read -r goodbye
+        echo ""
+        echo "You will now be sent back to the menu"
+        echo "goodbye"
+        sleep 5
 	echo "done"
 }	
 	
-ufw () {
-	echo "Checking firewall ports..."
+check_ufw () {	
+clear
+  echo "Checking firewall ports..."
 	sleep 2
-	CHECK="ufw status | grep -q $PORT"
-	if [ -z $CHECK ]; then
-		echo "Port $PORT already in UFW"
-	else
-		echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
-		ufw allow $PORT/tcp
-	fi
+	STATUS='ufw status'
+	echo $STATUS | grep "$PORT/tcp" > /dev/null
+	  if [ $? -gt 0 ]; then
+			echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
+			ufw allow $PORT/tcp > /dev/null
+			echo "$PORT has been allowed"
+		else
+			echo "Port $PORT already in UFW"
+		fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo "SSH port is port $ssh..."
-	CHECK2=`ufw status | grep -q $ssh`
-	if [ -z $CHECK2 ]; then
-		echo "Port $ssh already in UFW"
-	else
-		echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
-		ufw allow $ssh/tcp > /dev/null
-	fi
-	echo ""
-	ufw status
-	echo "UFW checked"
-	sleep 2
-	echo ""
-	clear
+	if [ "ufw status | grep -q $ssh/tcp" ]; then
+          echo "Port $ssh already in UFW"
+  else
+          echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
+          ufw allow $ssh/tcp > /dev/null
+ fi
+ echo ""
+ echo "UFW checked"
+ sleep 2
+ echo ""
+ clear
 }
 
 start_karmanode () {
+clear
 	echo "starting $daemon..."
 	$daemon
 	echo "Waiting for $DAEMON to start and begin to sync..."
@@ -177,7 +197,7 @@ start_karmanode () {
 	sleep 2
 	echo "Starting $daemon"
 	$daemon start
-    echo "Please wait 30 seconds"
+    	echo "Please wait 30 seconds"
 	sleep 30
 	echo "Running mnsync reset"
 	$cli mnsync reset
@@ -206,6 +226,7 @@ start_karmanode () {
 } # end the start_karmanode function
 
 upgrade () { 
+clear
 echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
 if [ -f ~/.$datadir/$datadir.conf ]; then
 	echo "$datadir.conf exists!"
@@ -226,15 +247,16 @@ else
 fi # end if $datadir.conf exists	
 } # end the upgrade
 
-iptables () { 
+check_iptables () { 
+clear
 	echo "Checking firewall ports..."
 	sleep 2
-	if [ "iptables -L INPUT -nv | grep -q $PORTS" ]
+	if [ "iptables -L INPUT -nv | grep -q $PORT" ]
 	then 
-		echo "Port $PORTS already in iptables"
+		echo "Port $PORT already in iptables"
 	else
-		echo "Adding iptables rules - iptables -I INPUT -p tcp --dport $PORTS -j ACCEPT"
-		iptables -I INPUT -p tcp --dport $PORTS -j ACCEPT
+		echo "Adding iptables rules - iptables -I INPUT -p tcp --dport $PORT -j ACCEPT"
+		iptables -I INPUT -p tcp --dport $PORT -j ACCEPT
 		service iptables save
 	fi
 	echo "Checking SSH port in config..."
@@ -255,9 +277,10 @@ iptables () {
 
 ######## ======== INSTALL FUNCTIONS ======== ########
 git_install () {
+clear
 	# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 	git clone $GITREPO
-	cd $datadir
+	cd $gitdir
 	chmod +x share/genbuild.sh
 	chmod +x autogen.sh
 	chmod 755 src/leveldb/build_detect_platform
@@ -268,13 +291,14 @@ git_install () {
 	echo "$COIN installed"
 	sleep 2
 	$daemon
-	echo "$daemon has been run once, it should have created the .shekel directory"
+	echo "$daemon has been run once, it should have created the .$datadir directory"
 	sleep 2
 	cd ..
-	rm -rf ~/$datadir
+	rm -rf ~/$gitdir
 }
 
-apt () {
+run_apt () {
+clear
 apt-get update &&
 apt-get upgrade -y &&
 apt-get install -yq \
@@ -301,7 +325,8 @@ fi # ends ppa if-statement
 apt-get install libdb4.8-dev libdb4.8++-dev -qy
 }
 
-yum () {
+run_yum () {
+clear
 yum install -y epel-release &&
 yum clean all &&
 yum repolist all &&
@@ -324,28 +349,29 @@ yum -y -q install \
 }
 
 install () {
+clear
 if grep -q 14.04 /etc/*elease
 then
 	echo "This is Ubuntu 14.04"	
 	echo "Installing $COIN on 14.04.from scratch"
 	libzmq="libzmq3"
-	apt
-	ufw
+	run_apt
+	check_ufw
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease
 then
 	echo "This is Ubuntu 16.04"
 	echo "Installing $COIN on 16.04 from scratch"
 	libzmq="libzmq3-dev"
-	apt
-	ufw
+	run_apt
+	check_ufw
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease
 then
 	echo "This is CentOS"
 	echo "Installing $COIN on CentOS from scratch"
-	yum
-	iptables
+	run_yum
+	check_iptables
 fi
 if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 then
@@ -360,6 +386,7 @@ start_karmanode
 
 ######## ======== UPGRADE FUNCTIONS ======== ########
 upgrade_karmanode () {
+clear
 	echo "This will upgrade your karmanode"
 	echo "Replacing your existing $daemon and $cli with the latest available"
 	sleep 5
@@ -409,7 +436,7 @@ then
 		libzmq="libzmq3"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
-		apt
+		run_apt
 		echo "Installed any missing packages"
 		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 		git_install
@@ -436,7 +463,7 @@ then
 		libzmq="libzmq3-dev"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
-		apt
+		run_apt
 		echo "Installed any missing packages"
 		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 		git_install
@@ -460,7 +487,7 @@ if grep -q centos /etc/*elease # This checks if any release file on the server r
 then
 	echo "This is CentOS"
 		echo "Installing $COIN on CentOS from scratch"
-		yum
+		run_yum
 		echo "Installed any missing packages"
 		git_install
 		echo "Latest $daemon installed"
@@ -488,6 +515,7 @@ fi # end the centos check if-statement
 
 
 install_service () {
+clear
 echo "Installing systemd script to start at boot and start $daemon...please wait"
 sleep 5
 cat <<EOF > /etc/systemd/system/$COIN.service
@@ -774,15 +802,16 @@ echo "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
 echo "==                  version 1.0                   =="
 echo "==                                                =="
 echo "== Please donate:                                 =="
-echo "== Bitcoin: 19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT    =="
+echo "== Bitcoin:  19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT   =="
 echo "== Litecoin: LiBKYy6ZpCzTPpkqYaHPmjfuiQiLvxkNDE   =="
-echo "== Shekel: JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU     =="
+echo "== Shekel:   JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   =="
+echo "== Ohm:      ZFjLmdQittBwSmJMCAHQkQfbuNV4Gs2vUu   =="
 echo "==                                                =="
 echo "==         Copyright Cryptojatt(c) 2018           ==" 
 echo "==        https://github.com/cryptojatt           =="
 echo "----------------------------------------------------"
 echo ""
-echo "Please consider donating for my efforts	:" 
+echo "Please consider donating for my time and effort in put into this	:" 
 echo ""
 sleep 1
 amiroot
