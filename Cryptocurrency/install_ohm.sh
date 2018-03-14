@@ -286,7 +286,7 @@ clear
 	chmod +x autogen.sh
 	chmod 755 src/leveldb/build_detect_platform
 	./autogen.sh
-	./configure --without-gui --disable-wallet
+	./configure --without-gui
 	make
 	make install
 	echo "$COIN installed"
