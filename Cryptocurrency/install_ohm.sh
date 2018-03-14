@@ -37,19 +37,23 @@ gitdir="ohmcoin"
 GITREPO="https://github.com/theohmproject/ohmcoin.git"
 getblockcount="http://explore.ohmcoin.org/api/getblockcount"
 PORT="52020"
-externalip="curl -s http://whatismyip.akamai.com"
+externalip="`curl -s http://whatismyip.akamai.com`"
 ##### CHANGABLE VARIABLES #####
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
 configure () { 
 clear
+rpcuser="ohmrpc"
+rpcpassword=$($daemon 2>&1 | grep '^rpcpassword=')
+echo "$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword"
+sleep 2
 echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
 if [ -f ~/.$datadir/$datadir.conf ]; then
         echo "$datadir.conf exists!"
         echo "Proceeding with configuring masternode..."
         sleep 2
-	rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-	rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating ~/.$datadir/$datadir.conf" & wait $!
 	echo -e rpcuser=$rpcuser >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e rpcpassword=$rpcpassword >> ~/.$datadir/$datadir.conf & wait $!
@@ -159,9 +163,9 @@ clear
 	echo "The script will now wait for the local wallet to sync with the chain...please wait"
 	Getdiff=5
 	IsItSynced() {
-	Checkblockchain="wget -O - $getblockcount"
-	Checkblockcount="$cli-cli getblockcount"
-	Getdiff="expr $Checkblockchain - $Checkblockcount"
+	Checkblockchain="`wget -O - $getblockcount`"
+	Checkblockcount="`$cli getblockcount`"
+	Getdiff="`expr $Checkblockchain - $Checkblockcount`"
 	current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
 	sleep 30
 	}
@@ -290,9 +294,6 @@ clear
 	make
 	make install
 	echo "$COIN installed"
-	sleep 2
-	$daemon
-	echo "$daemon has been run once, it should have created the .$datadir directory"
 	sleep 2
 	cd ..
 	rm -rf ~/$gitdir
