@@ -48,8 +48,8 @@ if [ -f ~/.$datadir/$datadir.conf ]; then
         echo "$datadir.conf exists!"
         echo "Proceeding with configuring masternode..."
         sleep 2
-rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+	rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating ~/.$datadir/$datadir.conf" & wait $!
 	echo -e rpcuser=$rpcuser >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e rpcpassword=$rpcpassword >> ~/.$datadir/$datadir.conf & wait $!
@@ -101,6 +101,7 @@ else
         echo "goodbye"
         sleep 5
 	echo "done"
+fi
 }	
 	
 check_ufw () {	
