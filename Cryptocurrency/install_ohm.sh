@@ -42,6 +42,12 @@ externalip="curl -s http://whatismyip.akamai.com"
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
 configure () { 
+clear
+echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
+if [ -f ~/.$datadir/$datadir.conf ]; then
+        echo "$datadir.conf exists!"
+        echo "Proceeding with configuring masternode..."
+        sleep 2
 rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating ~/.$datadir/$datadir.conf" & wait $!
@@ -82,10 +88,23 @@ rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	sed -i '/karmanodeprivkey/c\' ~/.$datadir/$datadir.conf
 	echo "karmanodeprivkey=$karmanodeprivkey" >> ~/.$datadir/$datadir.conf
 	sleep 2
+	echo "Configuration completed successfully"
+else
+        echo "$datadir.conf not found"
+	echo "This means the daemon install failed and the daemon didn't run properly"
+	echo "Please re-run the script or check the git repo paths are correct"
+	echo "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
+        echo -n "Hit any key to continue        :"
+        read -r goodbye
+        echo ""
+        echo "You will now be sent back to the menu"
+        echo "goodbye"
+        sleep 5
 	echo "done"
 }	
 	
 ufw () {	
+clear
 	echo "Checking firewall ports..."
 	sleep 2
 	STATUS='ufw status'
@@ -113,6 +132,7 @@ ufw () {
 }
 
 start_karmanode () {
+clear
 	echo "starting $daemon..."
 	$daemon
 	echo "Waiting for $DAEMON to start and begin to sync..."
@@ -205,6 +225,7 @@ start_karmanode () {
 } # end the start_karmanode function
 
 upgrade () { 
+clear
 echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
 if [ -f ~/.$datadir/$datadir.conf ]; then
 	echo "$datadir.conf exists!"
@@ -226,6 +247,7 @@ fi # end if $datadir.conf exists
 } # end the upgrade
 
 iptables () { 
+clear
 	echo "Checking firewall ports..."
 	sleep 2
 	if [ "iptables -L INPUT -nv | grep -q $PORTS" ]
@@ -254,6 +276,7 @@ iptables () {
 
 ######## ======== INSTALL FUNCTIONS ======== ########
 git_install () {
+clear
 	# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 	git clone $GITREPO
 	cd $datadir
@@ -274,6 +297,7 @@ git_install () {
 }
 
 apt () {
+clear
 apt-get update &&
 apt-get upgrade -y &&
 apt-get install -yq \
@@ -301,6 +325,7 @@ apt-get install libdb4.8-dev libdb4.8++-dev -qy
 }
 
 yum () {
+clear
 yum install -y epel-release &&
 yum clean all &&
 yum repolist all &&
@@ -323,11 +348,12 @@ yum -y -q install \
 }
 
 install () {
+clear
 if grep -q 14.04 /etc/*elease
 then
 	echo "This is Ubuntu 14.04"	
 	echo "Installing $COIN on 14.04.from scratch"
-	$libzmq = "libzmq3"
+	libzmq="libzmq3"
 	apt
 	ufw
 fi # ends the 14.04 if-statement
@@ -335,7 +361,7 @@ if grep -q 16.04 /etc/*elease
 then
 	echo "This is Ubuntu 16.04"
 	echo "Installing $COIN on 16.04 from scratch"
-	$libzmq = "libzmq3-dev"
+	libzmq="libzmq3-dev"
 	apt
 	ufw
 fi # ends the 16.04 if-statement
@@ -359,6 +385,7 @@ start_karmanode
 
 ######## ======== UPGRADE FUNCTIONS ======== ########
 upgrade_karmanode () {
+clear
 	echo "This will upgrade your karmanode"
 	echo "Replacing your existing $daemon and $cli with the latest available"
 	sleep 5
@@ -405,7 +432,7 @@ if grep -q 14.04 /etc/*elease # This checks if the release file on the server re
 then
 	echo "This is Ubuntu 14.04"	
 		echo "Upgrading $COIN on 14.04"
-		$libzmq = "libzmq3"
+		libzmq="libzmq3"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
 		apt
@@ -432,7 +459,7 @@ if grep -q 16.04 /etc/*elease # This checks if any release file on the server re
 then
 	echo "This is Ubuntu 16.04"
 		echo "Installing $COIN on 16.04 from scratch"
-		$libzmq = "libzmq3-dev"
+		libzmq="libzmq3-dev"
 		echo "Patching system..."
 		# Patches the system, installs required packages and repositories
 		apt
