@@ -159,17 +159,8 @@ SERVICE="$daemon"
                         sleep 5
                 fi # end $COIN.service running
         else
-                RESULT2=`ps -ef | sed -n /${SERVICE}/p`
-                if [ "${RESULT2:-null}" = null ]; then
-                        echo "$daemon is not running"
-                        echo "Starting $daemon..."
-                        $daemon 
-                        sleep 5
-                        RESULT3=`ps -ef | sed -n /${SERVICE}/p`
-                        if [ "${RESULT3:-null}" != null ]; then
-                                echo "$daemon is running!"
-                        fi # end if RESULT3
-                fi # end if RESULT2
+	echo "starting $daemon..."
+	$daemon start
         fi      # end if service exists
 	sleep 2
 	echo "While waiting for the chain to sync, continue with the following steps	:"
