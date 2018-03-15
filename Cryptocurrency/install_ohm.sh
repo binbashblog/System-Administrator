@@ -38,6 +38,7 @@ GITREPO="https://github.com/theohmproject/ohmcoin.git"
 getblockcount="http://explore.ohmcoin.org/api/getblockcount"
 PORT="52020"
 externalip="`curl -s http://whatismyip.akamai.com`"
+
 ##### CHANGABLE VARIABLES #####
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
@@ -46,28 +47,29 @@ clear
 rpcuser="ohmrpc"
 rpcpassword=$($daemon 2>&1 | grep '^rpcpassword=')
 echo "$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword"
+chown $currentuser:$currentuser $homedir/.$datadir -R
 sleep 2
-echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
-if [ -f ~/.$datadir/$datadir.conf ]; then
+echo "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
+if [ -f $homedir/.$datadir/$datadir.conf ]; then
         echo "$datadir.conf exists!"
         echo "Proceeding with configuring masternode..."
         sleep 2
 	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-	echo "generating ~/.$datadir/$datadir.conf" & wait $!
-	echo -e rpcuser=$rpcuser >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e $rpcpassword >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e rpcallowip=127.0.0.1 >> ~/.$datadir/$datadir.conf & wait $!
+	echo "generating $homedir/.$datadir/$datadir.conf" & wait $!
+	echo -e rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	#echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e staking=1 >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e listen=1 >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e daemon=1 >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e logtimestamps=1 >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e maxconnections=256 >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e karmanode=1 >> ~/.$datadir/$datadir.conf & wait $!
+	echo -e staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e karmanode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	#echo -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
 	#echo -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e karmanodeprivkey= >> ~/.$datadir/$datadir.conf & wait $!
+	echo -e karmanodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
 	sleep 2
 	echo "Your rpcuser is $rpcuser"
 	echo "Your rpcpassword is $rpcpassword"
@@ -86,12 +88,12 @@ if [ -f ~/.$datadir/$datadir.conf ]; then
 	echo $karmanodeprivkey
 	sleep 5
 	echo "Using your answers to generate the .conf"
-	#sed -i '/externalip/c\' ~/.$datadir/$datadir.conf
-	#echo "externalip=$externalip:$PORT" >> ~/.$datadir/$datadir.conf
-	#sed -i '/karmanodeaddr/c\' ~/.$datadir/$datadir.conf
-	#echo "karmanodeaddr=$externalip:$PORT" >> ~/.$datadir/$datadir.conf
-	sed -i '/karmanodeprivkey/c\' ~/.$datadir/$datadir.conf
-	echo "karmanodeprivkey=$karmanodeprivkey" >> ~/.$datadir/$datadir.conf
+	#sed -i '/externalip/c\' $homedir/.$datadir/$datadir.conf
+	#echo "externalip=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
+	#sed -i '/karmanodeaddr/c\' $homedir/.$datadir/$datadir.conf
+	#echo "karmanodeaddr=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
+	sed -i '/karmanodeprivkey/c\' $homedir/.$datadir/$datadir.conf
+	echo "karmanodeprivkey=$karmanodeprivkey" >> $homedir/.$datadir/$datadir.conf
 	sleep 2
 	echo "Configuration completed successfully"
 	sleep 2
@@ -225,7 +227,7 @@ SERVICE="$daemon"
 	fi #end if RESULT:-null
 	sleep 5
 	echo "deleting mncache file..."
-	rm ~/.$datadir/mncache.dat -rf
+	rm $homedir/.$datadir/mncache.dat -rf
 	sleep 2
 	if [ -f /etc/systemd/system/$COIN.service ]; then
                 echo "$COIN Systemd service found!"
@@ -268,7 +270,7 @@ SERVICE="$daemon"
 	echo "if not check your cold wallet's status or try '$cli karmanode status' again, or restart if you still can't see it"
 	echo ""
 	sleep 2
-	cat ~/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
+	cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
 	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
@@ -283,8 +285,8 @@ SERVICE="$daemon"
 
 upgrade () { 
 clear
-echo "Checking ~/.$datadir/$datadir.conf exists" & wait $!
-if [ -f ~/.$datadir/$datadir.conf ]; then
+echo "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
+if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	echo "$datadir.conf exists!"
 	echo "Proceeding with upgrade..."
 	sleep 2
@@ -347,7 +349,7 @@ clear
 	echo "$COIN installed"
 	sleep 2
 	cd ..
-	rm -rf ~/$gitdir
+	rm -rf $homedir/$gitdir
 }
 
 run_apt () {
@@ -370,7 +372,7 @@ apt-get install -yq \
 	software-properties-common \
 	$libzmq \
 	libminiupnpc-dev &&
-if [ ! -e /etc/apt/sources.list.d/bitcoin-bitcoin-trusty.list ]
+if [ ! -e /etc/apt/sources.list.d/bitcoin-bitcoin-trusty.list ] || [ ! -e /etc/apt/sources.list.d/bitcoin-ubuntu-bitcoin-xenial.list ]
 then 
    	add-apt-repository ppa:bitcoin/bitcoin -y
 	apt-get update
@@ -586,12 +588,12 @@ Description=$COIN's distributed currency daemon
 After=network.target
 
 [Service]
-User=$USER
+User=$currentuser
 
 
 Type=forking
-PIDFile=~/.$datadir/$daemon.pid
-ExecStart=/usr/local/bin/$daemon -daemon -pid=~/.$datadir/$daemon.pid -conf=~/.$datadir/$datadir.conf -datadir=~/.$datadir
+PIDFile=$homedir/.$datadir/$daemon.pid
+ExecStart=/usr/local/bin/$daemon -daemon -pid=$homedir/.$datadir/$daemon.pid -conf=$homedir/.$datadir/$datadir.conf -datadir=$homedir/.$datadir
 #-disablewallet
 
 Restart=always
@@ -652,14 +654,14 @@ sleep 3
 }
 
 install_check () {
-echo "Creating check.sh in $USER's home directory"
+echo "Creating check.sh in $currentuser's home directory"
 echo -n "Please paste your wallet address holding your $COIN collateral	:"
 read -r add
 echo "Enter your email address if you want notifications	:"
 echo "You will need sendmail installed and configured"
 read -r email
-touch ~/check.sh
-cat <<EOF  > ~/check.sh
+touch $homedir/check.sh
+cat <<EOF  > $homedir/check.sh
 #!/bin/bash
 
 ipaddr=`curl -s http://whatismyip.akamai.com`
@@ -673,7 +675,7 @@ abort()
 === $daemon not running...restarting ===
 ========================================
 '
-rm ~/.$datadir/mncache.dat -rf
+rm $homedir/.$datadir/mncache.dat -rf
 systemctl start $daemon
 sleep 30
 echo ""
@@ -695,7 +697,7 @@ echo "==== karmanode list OUTPUT ===="
 echo ""
 echo ""
 echo "==== debug.log OUTPUT ===="
-cat ~/.$datadir/debug.log | grep CActivekarmanode::EnableHotColdkarmanode
+cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
 echo "==== debug.log OUTPUT ===="
 echo ""
 echo ""
@@ -724,17 +726,17 @@ echo ""
 echo ""
   sleep 30
 echo "==== karmanode status OUTPUT ===="
-$cli karmanode status
+  $cli karmanode status
 echo "==== karmanode status OUTPUT ===="
 echo ""
 echo ""
 echo "==== karmanode list OUTPUT ===="
-$cli karmanode list $add
+  $cli karmanode list $add
 echo "==== karmanode list OUTPUT ===="
 echo ""
 echo ""
 echo "==== debug.log OUTPUT ===="
-cat ~/.$datadir/debug.log | grep CActivekarmanode::EnableHotColdkarmanode
+  cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
 echo "==== debug.log OUTPUT ===="
 echo ""
 echo ""
@@ -752,7 +754,7 @@ if [[ $check == *"POS_ERROR"* ]]; then
    echo "POS ERROR!"
    systemctl stop $daemon
    sleep 30
-   rm ~/.$datadir/mncache.dat -rf
+   rm $homedir/.$datadir/mncache.dat -rf
    systemctl start $COIN
    sleep 30
 echo ""
@@ -774,7 +776,7 @@ echo "==== karmanode list OUTPUT ===="
 echo ""
 echo ""
 echo "==== debug.log OUTPUT ===="
-cat ~/.$datadir/debug.log | grep CActivekarmanode::EnableHotColdkarmanode
+cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
 echo "==== debug.log OUTPUT ===="
 echo ""
 echo ""
@@ -809,7 +811,7 @@ echo "==== karmanode list OUTPUT ===="
 echo ""
 echo ""
 echo "==== debug.log OUTPUT ===="
-cat ~/.$datadir/debug.log | grep CActivekarmanode::EnableHotColdkarmanode
+cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
 echo "==== debug.log OUTPUT ===="
 echo ""
 echo ""
@@ -829,18 +831,18 @@ EOF
 if [ "$email" != "" ]
 then
 	chmod +x ~/check.sh
-	sudo -u $USER crontab -l > mycron
-	echo "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email"
-	sudo -u $USER echo -e "*/30 * * * * ~/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email" >> mycron
-	sudo -u $USER crontab mycron
-	sudo -u $USER rm mycron
+	sudo -u $currentuser crontab -l > mycron
+	echo "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email"
+	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email" >> mycron
+	sudo -u $currentuser crontab mycron
+	sudo -u $currentuser rm mycron
 else
-	chmod +x ~/check.sh
-	sudo -u $USER crontab -l > mycron
-	echo "*/30 * * * * ~/check.sh"
-	sudo -u $USER echo -e "*/30 * * * * ~/check.sh" >> mycron
-	sudo -u $USER crontab mycron
-	sudo -u $USER rm mycron
+	chmod +x $homedir/check.sh
+	sudo -u $currentuser crontab -l > mycron
+	echo "*/30 * * * * $homedir/check.sh"
+	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh" >> mycron
+	sudo -u $currentuser crontab mycron
+	sudo -u $currentuser rm mycron
 fi
 }
 
@@ -848,9 +850,16 @@ amiroot () {
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root"
    echo "Run this script again as root or sudo"
-   echo "e.g sudo ./install_karmanode.sh"
+   echo "e.g sudo ./install_ohm.sh"
    echo "this script will now exit"
    exit 1
+fi
+currentuser=$(who | awk '{print $1}')
+if [ "$currentuser" == "root" ]
+then
+	homedir="/root"
+else
+	homedir="/home/$currentuser"
 fi
 }
 ################ ================ MENU ================ ################
@@ -859,7 +868,7 @@ while :
 do
     clear
 echo "===================================================="
-echo "==          karmanode Wallet Installer            =="
+echo "==          Karmanode Wallet Installer            =="
 echo "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
 echo "==                  version 1.0                   =="
 echo "==                                                =="
