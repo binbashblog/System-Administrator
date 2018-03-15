@@ -125,25 +125,25 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
         sleep 2
 	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-	echo -e "generating $homedir/.$datadir/$datadir.conf" & wait $!
-	echo -e -e rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo "generating $homedir/.$datadir/$datadir.conf" & wait $!
+	echo rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo  $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	#echo -e -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e -e staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e -e karmanode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo karmanode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	#echo -e -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
 	#echo -e -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e -e karmanodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo karmanodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
 	sleep 2
-	echo -e "Your rpcuser is $rpcuser"
-	echo -e "Your rpcpassword is $rpcpassword"
-	echo -e "Make sure to save your rpc username and password for your cold wallet later"
-	echo -e -n "Press any key to continue"
+	echo -e "${RED}Your rpcuser is ${GREEN}$rpcuser"
+	echo -e "${RED}Your rpcpassword is ${GREEN}$rpcpassword"
+	echo -e "${RED}Make sure to save your rpc username and password for your cold wallet later"
+	echo -e -n "Press enter key to continue"
 	read -r cont
 	echo -e ""
 	echo -e -n "enter the karmanodeprivatekey		:"
@@ -162,7 +162,7 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	#sed -i '/karmanodeaddr/c\' $homedir/.$datadir/$datadir.conf
 	#echo -e "karmanodeaddr=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
 	sed -i '/karmanodeprivkey/c\' $homedir/.$datadir/$datadir.conf
-	echo -e "${GREEN}karmanodeprivkey=$karmanodeprivkey" >> $homedir/.$datadir/$datadir.conf${NC}
+	echo "karmanodeprivkey=$karmanodeprivkey" >> $homedir/.$datadir/$datadir.conf
 	sleep 2
 	echo -e "${RED}Configuration completed successfully${NC}"
 	sleep 2
@@ -171,7 +171,7 @@ else
 	echo -e "This means the daemon install failed and the daemon didn't run properly"
 	echo -e "Please re-run the script or check the git repo paths are correct"
 	echo -e "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
-        echo -e -n "Hit any key to continue        :"
+        echo -e -n "Hit enter key to continue        :"
         read -r goodbye
         echo -e ""
         echo -e "You will now be sent back to the menu"
@@ -282,7 +282,7 @@ clear
 	sleep 5
 	echo -e ""
 	echo -e "If this helped you please consider donating here for my efforts	:${NC}"
-	echo -e "Press any key to continue"
+	echo -e "Press enter key to continue"
 	read -r goodbye
 	echo -e ""
 	echo -e "${RED}You will now be sent back to the menu"
@@ -336,7 +336,7 @@ else
 	echo -e "$datadir.conf not found"
 	echo -e "You either have a custom install in a custom location..."
 	echo -e "...or you have not installed a karmanode yet..."
-	echo -e -n "Hit any key to continue	:"
+	echo -e -n "Hit enter key to continue	:"
 	read -r goodbye
 	echo -e ""
 	echo -e "You will now be sent back to the menu"
