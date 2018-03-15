@@ -882,8 +882,9 @@ cat <<EOF
 
     Install Wallet & Set Up karmanode  (1)
     Upgrade Wallet & Start karmanode   (2)
-    Install Systemd Service	       (3)
-    Install check script	       (4)
+    Start karmanode                    (3)
+    Install Systemd Service	       (4)
+    Install check script	       (5)
            			       (Q)uit
     ------------------------------
 EOF
@@ -891,8 +892,9 @@ EOF
     case "$REPLY" in
     "1")  install ;;
     "2")  upgrade ;;
-    "3")  install_service ;;
-    "4")  install_check ;;
+    "3")  start_karmanode ;;
+    "4")  install_service ;;
+    "5")  install_check ;;
     "Q")  exit                      ;;
     "q")  echo "case sensitive!!"   ;; 
      * )  echo "invalid option"     ;;
