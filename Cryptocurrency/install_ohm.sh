@@ -42,6 +42,72 @@ externalip="`curl -s http://whatismyip.akamai.com`"
 ##### CHANGABLE VARIABLES #####
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
+start_daemon () {
+if [ -f /etc/systemd/system/$COIN.service ];
+then
+	echo "$COIN Systemd service found!"
+	if [ "systemctl status $COIN.service | grep running" ];
+        then
+                echo "$COIN service is running"	
+	else
+        	systemctl start $COIN.service
+        	echo "Starting $COIN.service..."
+        	sleep 5
+	fi
+        if [ "systemctl status $COIN.service | grep running" ];
+	then
+        	echo "$COIN service is running"
+        else
+        	echo "Error! $COIN is not running"
+                echo "There may be a problem with the service"
+                echo "You may need to quit the script and start the service manually!"
+                sleep 5
+        fi # end $COIN.service running
+else	
+	if pgrep -x "$daemon" > /dev/null
+	then
+		echo "$daemon is running"
+	else
+		echo "starting $daemon..."
+		$daemon -daemon
+	fi
+fi
+}
+
+stop_daemon () {
+if [ -f /etc/systemd/system/$COIN.service ];
+then
+        echo "$COIN Systemd service found!"
+	if [ "systemctl status $COIN.service | grep running" ];
+        then	
+		systemctl stop $COIN.service
+                echo "$COIN service is stopping"
+		sleep 5
+		$cli stop
+        else
+                echo "$COIN.service is not running"
+                sleep 5
+        fi
+        if [ "systemctl status $COIN.service | grep running" ];
+        then
+                echo "Error! $COIN service is still running"
+                echo "There may be a problem with the service"
+                echo "You may need to quit the script and stop the service manually!"
+                sleep 5
+        fi # end $COIN.service running
+else
+        if pgrep -x "$daemon" > /dev/null
+        then
+        	echo "$daemon is stopping"
+		$cli stop
+        else
+        	echo "$daemon still running"
+		echo "There may be a problem with the service"
+                echo "You may need to quit the script and stop the daemon manually!"
+        fi
+fi
+}
+
 configure () { 
 clear
 rpcuser="ohmrpc"
@@ -143,25 +209,7 @@ clear
 
 start_karmanode () {
 clear
-echo "starting $daemon..."
-SERVICE="$daemon"
-        if [ -f /etc/systemd/system/$COIN.service ]; then
-                echo "$COIN Systemd service found!"
-                systemctl start $COIN.service
-		echo "Starting $COIN.service..."
-		sleep 5
-                if [ "systemctl status $COIN.service | grep running" ]; then
-                        echo "$COIN service is running"
-                else
-                        echo "Error! $COIN is not running"
-			echo "There may be a problem with the service"
-			echo "You may need to quit the script and start the karmanode manually!"
-                        sleep 5
-                fi # end $COIN.service running
-        else
-	echo "starting $daemon..."
-	$daemon start
-        fi      # end if service exists
+	start_daemon
 	sleep 2
 	echo "While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
@@ -204,48 +252,12 @@ SERVICE="$daemon"
 	done
 	echo ""
 	echo "Local wallet is now in sync"
-	echo "Stopping $daemon..."
-	$cli stop
-	sleep 10
-	echo "Checking if $daemon is still running..."
-	SERVICE="$daemon"
-	RESULT=`ps -a | sed -n /${SERVICE}/p`
-	if [ "${RESULT:-null}" = null ]; then
-		echo "$daemon is not running"
-	else
-		echo "Forcing $daemon to stop"
-		killall -9 $daemon
-	fi #end if RESULT:-null
+	stop_daemon
 	sleep 5
 	echo "deleting mncache file..."
 	rm $homedir/.$datadir/mncache.dat -rf
 	sleep 2
-	if [ -f /etc/systemd/system/$COIN.service ]; then
-                echo "$COIN Systemd service found!"
-                systemctl start $COIN.service
-                echo "Starting $COIN.service..."
-                sleep 5
-                if [ "systemctl status $COIN.service | grep running" ]; then
-                        echo "$COIN service is running"
-                else
-                        echo "Error! $COIN is not running"
-                        echo "There may be a problem with the service"
-                        echo "You may need to quit the script and start the karmanode manually!"
-                        sleep 5
-                fi # end $COIN.service running
-        else
-                RESULT2=`ps -ef | sed -n /${SERVICE}/p`
-                if [ "${RESULT2:-null}" = null ]; then
-                        echo "$daemon is not running"
-                        echo "Starting $daemon..."
-                        $daemon
-                        sleep 5
-                        RESULT3=`ps -ef | sed -n /${SERVICE}/p`
-                        if [ "${RESULT3:-null}" != null ]; then
-                                echo "$daemon is running!"
-                        fi # end if RESULT3
-                fi # end if RESULT2
-        fi      # end if service exists
+	start_deamon
     	echo "Please wait 30 seconds"
 	sleep 30
 	echo "Running mnsync reset"
@@ -281,8 +293,40 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	echo "$datadir.conf exists!"
 	echo "Proceeding with upgrade..."
 	sleep 2
-	install
-	start_karmanode
+	clear
+	if grep -q 14.04 /etc/*elease
+	then
+        	echo "This is Ubuntu 14.04"
+        	echo "Installing $COIN on 14.04.from scratch"
+        	libzmq="libzmq3"
+        	run_apt
+        	check_ufw
+        	git_install
+        	start_karmanode
+	fi # ends the 14.04 if-statement
+	if grep -q 16.04 /etc/*elease
+	then
+        	echo "This is Ubuntu 16.04"
+        	echo "Installing $COIN on 16.04 from scratch"
+        	libzmq="libzmq3-dev"
+        	run_apt
+        	check_ufw
+        	git_install
+        	start_karmanode
+	fi # ends the 16.04 if-statement
+	if grep -q centos /etc/*elease
+	then
+        	echo "This is CentOS"
+        	echo "Installing $COIN on CentOS from scratch"
+        	run_yum
+        	check_iptables
+        	git_install
+        	start_karmanode
+	fi
+	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
+	then
+        	echo "This is an unsupported OS"
+	fi # end unsupported OS check
 else
 	echo "$datadir.conf not found"
 	echo "You either have a custom install in a custom location..."
@@ -861,7 +905,7 @@ do
 echo "===================================================="
 echo "==          Karmanode Wallet Installer            =="
 echo "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
-echo "==                  version 1.0                   =="
+echo "==                  version 2.0                   =="
 echo "==                                                =="
 echo "== Please donate:                                 =="
 echo "== Bitcoin:  19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT   =="
