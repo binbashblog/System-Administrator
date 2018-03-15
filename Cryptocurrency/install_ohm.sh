@@ -279,11 +279,12 @@ clear
 	sleep 5
 	echo ""
 	echo "If this helped you please consider donating here for my efforts	:"
+	echo "Press any key to continue"
 	read -r goodbye
 	echo ""
 	echo "You will now be sent back to the menu"
-	echo "goodbye"
-	sleep 5
+	echo "Goodbye"
+	sleep 3
 } # end the start_karmanode function
 
 upgrade () { 
