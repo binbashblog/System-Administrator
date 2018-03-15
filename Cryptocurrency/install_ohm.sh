@@ -257,7 +257,7 @@ clear
 	echo "deleting mncache file..."
 	rm $homedir/.$datadir/mncache.dat -rf
 	sleep 2
-	start_deamon
+	start_daemon
     	echo "Please wait 30 seconds"
 	sleep 30
 	echo "Running mnsync reset"
