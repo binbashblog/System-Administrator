@@ -38,37 +38,40 @@ GITREPO="https://github.com/theohmproject/ohmcoin.git"
 getblockcount="http://explore.ohmcoin.org/api/getblockcount"
 PORT="52020"
 externalip="`curl -s http://whatismyip.akamai.com`"
-
 ##### CHANGABLE VARIABLES #####
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
 
 ######## ======== CONFIGURE FUNCTIONS ======== ########
 start_daemon () {
 if [ -f /etc/systemd/system/$COIN.service ];
 then
-	echo "$COIN Systemd service found!"
+	echo -e "$COIN Systemd service found!"
 	if [ "systemctl status $COIN.service | grep running" ];
         then
-                echo "$COIN service is running"	
+                echo -e "${RED}$COIN service is running${NC}"	
 	else
         	systemctl start $COIN.service
-        	echo "Starting $COIN.service..."
+        	echo -e "${RED}Starting $COIN.service...${NC}"
         	sleep 5
 	fi
         if [ "systemctl status $COIN.service | grep running" ];
 	then
-        	echo "$COIN service is running"
+        	echo -e "${RED}$COIN service is running${NC}"
         else
-        	echo "Error! $COIN is not running"
-                echo "There may be a problem with the service"
-                echo "You may need to quit the script and start the service manually!"
+        	echo -e "${RED}Error! $COIN is not running"
+                echo -e "There may be a problem with the service"
+                echo -e "You may need to quit the script and start the service manually!${NC}"
                 sleep 5
         fi # end $COIN.service running
 else	
 	if pgrep -x "$daemon" > /dev/null
 	then
-		echo "$daemon is running"
+		echo -e "${RED}$daemon is running${NC}"
 	else
-		echo "starting $daemon..."
+		echo -e "${RED}starting $daemon...${NC}"
 		$daemon -daemon
 	fi
 fi
@@ -77,33 +80,33 @@ fi
 stop_daemon () {
 if [ -f /etc/systemd/system/$COIN.service ];
 then
-        echo "$COIN Systemd service found!"
+        echo -e "${RED}$COIN Systemd service found!${NC}"
 	if [ "systemctl status $COIN.service | grep running" ];
         then	
 		systemctl stop $COIN.service
-                echo "$COIN service is stopping"
+                echo -e "${RED}$COIN service is stopping${NC}"
 		sleep 5
 		$cli stop
         else
-                echo "$COIN.service is not running"
+                echo -e "${RED}$COIN.service is not running${NC}"
                 sleep 5
         fi
         if [ "systemctl status $COIN.service | grep running" ];
         then
-                echo "Error! $COIN service is still running"
-                echo "There may be a problem with the service"
-                echo "You may need to quit the script and stop the service manually!"
+                echo -e "${RED}Error! $COIN service is still running"
+                echo -e "There may be a problem with the service"
+                echo -e "You may need to quit the script and stop the service manually!${NC}"
                 sleep 5
         fi # end $COIN.service running
 else
         if pgrep -x "$daemon" > /dev/null
         then
-        	echo "$daemon is stopping"
+        	echo -e "${RED}$daemon is stopping${NC}"
 		$cli stop
         else
-        	echo "$daemon still running"
-		echo "There may be a problem with the service"
-                echo "You may need to quit the script and stop the daemon manually!"
+        	echo -e "${RED}$daemon still running"
+		echo -e "There may be a problem with the service"
+                echo -e "You may need to quit the script and stop the daemon manually!${NC}"
         fi
 fi
 }
@@ -112,98 +115,98 @@ configure () {
 clear
 rpcuser="ohmrpc"
 rpcpassword=$($daemon 2>&1 | grep '^rpcpassword=')
-echo "$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword"
+echo -e "${RED}$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
 chown $currentuser:$currentuser $homedir/.$datadir -R
 sleep 2
-echo "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
+echo -e "${RED}Checking $homedir/.$datadir/$datadir.conf exists${NC}" & wait $!
 if [ -f $homedir/.$datadir/$datadir.conf ]; then
-        echo "$datadir.conf exists!"
-        echo "Proceeding with configuring masternode..."
+        echo -e "${RED}$datadir.conf exists!"
+        echo -e "Proceeding with configuring masternode...${RED}"
         sleep 2
 	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-	echo "generating $homedir/.$datadir/$datadir.conf" & wait $!
-	echo -e rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	#echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo -e karmanode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	#echo -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
-	#echo -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e karmanodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e "generating $homedir/.$datadir/$datadir.conf" & wait $!
+	echo -e -e rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	#echo -e -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
+	echo -e -e staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo -e -e karmanode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	#echo -e -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
+	#echo -e -e karmanodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
+	echo -e -e karmanodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
 	sleep 2
-	echo "Your rpcuser is $rpcuser"
-	echo "Your rpcpassword is $rpcpassword"
-	echo "Make sure to save your rpc username and password for your cold wallet later"
-	echo -n "Press any key to continue"
+	echo -e "Your rpcuser is $rpcuser"
+	echo -e "Your rpcpassword is $rpcpassword"
+	echo -e "Make sure to save your rpc username and password for your cold wallet later"
+	echo -e -n "Press any key to continue"
 	read -r cont
-	echo ""
-	echo -n "enter the karmanodeprivatekey		:"
+	echo -e ""
+	echo -e -n "enter the karmanodeprivatekey		:"
 	read -r karmanodeprivkey
-	echo "These were your answers		:"
-	echo ""
-	echo ""
-	echo "rpcuser=$rpcuser"
-	echo $rpcpassword
-	echo $externalip
-	echo $karmanodeprivkey
+	echo -e "These were your answers		:"
+	echo -e ""
+	echo -e ""
+	echo -e "${GREEN}rpcuser=$rpcuser"
+	echo -e $rpcpassword
+	echo -e $externalip
+	echo -e $karmanodeprivkey${NC}
 	sleep 5
-	echo "Using your answers to generate the .conf"
+	echo -e "${RED}Using your answers to generate the .conf${NC}"
 	#sed -i '/externalip/c\' $homedir/.$datadir/$datadir.conf
-	#echo "externalip=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
+	#echo -e "externalip=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
 	#sed -i '/karmanodeaddr/c\' $homedir/.$datadir/$datadir.conf
-	#echo "karmanodeaddr=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
+	#echo -e "karmanodeaddr=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
 	sed -i '/karmanodeprivkey/c\' $homedir/.$datadir/$datadir.conf
-	echo "karmanodeprivkey=$karmanodeprivkey" >> $homedir/.$datadir/$datadir.conf
+	echo -e "${GREEN}karmanodeprivkey=$karmanodeprivkey" >> $homedir/.$datadir/$datadir.conf${NC}
 	sleep 2
-	echo "Configuration completed successfully"
+	echo -e "${RED}Configuration completed successfully${NC}"
 	sleep 2
 else
-        echo "$datadir.conf not found"
-	echo "This means the daemon install failed and the daemon didn't run properly"
-	echo "Please re-run the script or check the git repo paths are correct"
-	echo "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
-        echo -n "Hit any key to continue        :"
+        echo -e "${RED}$datadir.conf not found"
+	echo -e "This means the daemon install failed and the daemon didn't run properly"
+	echo -e "Please re-run the script or check the git repo paths are correct"
+	echo -e "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
+        echo -e -n "Hit any key to continue        :"
         read -r goodbye
-        echo ""
-        echo "You will now be sent back to the menu"
-        echo "goodbye"
+        echo -e ""
+        echo -e "You will now be sent back to the menu"
+        echo -e "goodbye"
         sleep 5
-	echo "done"
+	echo -e "done${NC}"
 fi
 }	
 	
 check_ufw () {	
 clear
-  echo "Checking firewall ports..."
+  echo -e "${RED}Checking firewall ports...${NC}"
 	sleep 2
 	ufw status  | grep $PORT
 	  if [ `ufw status | grep -q $PORT` ]; then
-			echo "Port $PORT already in UFW"
+			echo -e "${RED}Port ${GREEN}$PORT${RED} already in UFW${NC}"
 		else
-			echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
+			echo -e "${RED}Adding port ${GREEN}$PORT${RED} to UFW rules - ${GREEN}ufw allow $PORT/tcp${NC}"
                         ufw allow $PORT/tcp > /dev/null
-                        echo "$PORT has been allowed"
+                        echo -e "${GREEN}$PORT${RED} has been allowed${NC}"
 		fi
-	echo "Checking SSH port in config..."
+	echo -e "${RED}Checking SSH port in config...${NC}"
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
-	echo "SSH port is port $ssh..."
+	echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
 	ufw status | grep $ssh
 	if [ `ufw status | grep -q $ssh` ]; then
-          echo "Port $ssh already in UFW"
+          echo -e "${RED}Port ${GREEN}$ssh ${RED}already in UFW${NC}"
   else
-          echo "Adding ssh port to UFW rules - ufw limit $ssh/tcp comment 'SSH port rate limit'"
+          echo -e "${RED}Adding ssh port to UFW rules - ${GREEN}ufw limit $ssh/tcp comment 'SSH port rate limit'${NC}"
           ufw limit $ssh/tcp comment 'SSH port rate limit' > /dev/null
  fi
- echo ""
- echo "UFW checked"
+ echo -e ""
+ echo -e "${RED}UFW checked${NC}"
  sleep 2
- echo ""
+ echo -e ""
  clear
 }
 
@@ -211,94 +214,95 @@ start_karmanode () {
 clear
 	start_daemon
 	sleep 2
-	echo "While waiting for the chain to sync, continue with the following steps	:"
+	echo -e "${RED}While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
-	echo "Go to your cold wallet, open Tools > Debug console	"
-	echo "enter 	karmanode list-conf     into the console"
-	echo ""
-	sleep 5
-	echo "You should see your karmanode with a status of MISSING"
-	echo ""
-	sleep 5
-	echo ""
-	echo "Then select the Karmanode tab, right-click your karmanode alias"
-	echo "click Start Alias"
-	echo ""
-	sleep 5
-	echo -n "Hit enter once you have started the karmanode	:"
+	echo -e "Go to your cold wallet, open Tools > Debug console	"
+	echo -e "enter ${GREEN}karmanode list-conf ${RED}into the console"
+	echo -e ""
+	sleep 2
+	echo -e "You should see your karmanode with a status of ${GREEN}MISSING${RED}"
+	echo -e ""
+	sleep 2
+	echo -e ""
+	echo -e "Then select the Karmanode tab, right-click your karmanode alias"
+	echo -e "click ${GREEN}Start Alias${RED}"
+	echo -e ""
+	sleep 2
+	echo -e -n "Hit enter once you have started the karmanode	:"
 	read -r enter
-	echo ""
-	echo "The script will now wait for the local wallet to sync with the chain...please wait"
+	echo -e ""
+	echo -e "The script will now wait for the local wallet to sync with the chain...please wait${NC}"
 	Getdiff=5
 	IsItSynced() {
 	Checkblockchain="`wget -O - $getblockcount`"
 	Checkblockcount="`$cli getblockcount`"
 	Getdiff="`expr $Checkblockchain - $Checkblockcount`"
 	current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
-	sleep 30
+	sleep 10
 	}
 	while [[ $Getdiff -gt 1 ]]
 	do
 	IsItSynced 2>/dev/null
-	echo ""
-	echo $current_date_time;
-	echo ""
-	echo "Explorer Block is $Checkblockchain"
-	echo "Local Wallet Block is $Checkblockcount"
-	echo "Difference is $Getdiff"
-	echo "Waiting for wallet to match the Explorer block for it to be in sync"
-	echo "Please wait...."
-	echo "----------------------"
+	echo -e ""
+	echo -e $current_date_time;
+	echo -e ""
+	echo -e "${RED}Explorer Block is ${GREEN}$Checkblockchain"
+	echo -e "${RED}Local Wallet Block is ${GREEN}$Checkblockcount"
+	echo -e "${RED}Difference is ${GREEN}$Getdiff"
+	echo -e "${RED}Waiting for wallet to match the Explorer block for it to be in sync"
+	echo -e "Please wait...."
+	echo -e "----------------------"
 	done
-	echo ""
-	echo "Local wallet is now in sync"
+	echo -e ""
+	echo -e "Local wallet is now in sync${NC}"
 	stop_daemon
 	sleep 5
-	echo "deleting mncache file..."
+	echo -e "${RED}deleting mncache file...${NC}"
 	rm $homedir/.$datadir/mncache.dat -rf
 	sleep 2
 	start_daemon
-    	echo "Please wait 30 seconds"
-	sleep 30
-	echo "Running mnsync reset"
+    	echo -e "${RED}Please wait 10 seconds"
+	sleep 10
+	echo -e "Running mnsync reset${NC}"
 	$cli mnsync reset
-	echo "This should force the wallet to grab the latest list of current running karmanodes"
-	echo "Waiting for mnsync to complete...please wait"
-	sleep 30
+	echo -e "${RED}This should force the wallet to grab the latest list of current running karmanodes"
+	echo -e "Waiting for mnsync to complete...please wait${NC}"
+	sleep 10
 	$cli getinfo
 	$cli karmanode status
 	sleep 5
-	echo "Hopefully by now you should see your karmanode above" 
+	echo -e "${RED}Hopefully by now you should see your karmanode above" 
 	sleep 2
-	echo "if not check your cold wallet's status or try '$cli karmanode status' again, or restart if you still can't see it"
-	echo ""
+	echo -e "if not check your cold wallet's status or try ${GREEN}'$cli karmanode status' ${RED}again, or restart if you still can't see it${NC}"
+	echo -e ""
 	sleep 2
-	cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
+	${GREEN}cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
 	sleep 2
-	echo "You should see the enabled message above, if not you will need to troubleshoot further"
+	echo -e "${RED}You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
-	echo ""
-	echo "If this helped you please consider donating here for my efforts	:"
-	echo "Press any key to continue"
+	echo -e ""
+	echo -e "If this helped you please consider donating here for my efforts	:${NC}"
+	echo -e "Press any key to continue"
 	read -r goodbye
-	echo ""
-	echo "You will now be sent back to the menu"
-	echo "Goodbye"
+	echo -e ""
+	echo -e "${RED}You will now be sent back to the menu"
+	echo -e "Goodbye${NC}"
 	sleep 3
 } # end the start_karmanode function
 
 upgrade () { 
 clear
-echo "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
+stop_daemon
+echo -e "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
 if [ -f $homedir/.$datadir/$datadir.conf ]; then
-	echo "$datadir.conf exists!"
-	echo "Proceeding with upgrade..."
+	echo -e "${RED}$datadir.conf exists!"
+	echo -e "Proceeding with upgrade...${NC}"
 	sleep 2
 	clear
 	if grep -q 14.04 /etc/*elease
 	then
-        	echo "This is Ubuntu 14.04"
-        	echo "Installing $COIN on 14.04.from scratch"
+        	echo -e "${RED}This is Ubuntu 14.04"
+        	echo -e "Installing ${GREEN}$COIN ${RED}on 14.04.from scratch${NC}"
         	libzmq="libzmq3"
         	run_apt
         	check_ufw
@@ -307,8 +311,8 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	fi # ends the 14.04 if-statement
 	if grep -q 16.04 /etc/*elease
 	then
-        	echo "This is Ubuntu 16.04"
-        	echo "Installing $COIN on 16.04 from scratch"
+        	echo -e "${RED}This is Ubuntu 16.04"
+        	echo -e "Installing ${GREEN}$COIN ${RED}on 16.04 from scratch${NC}"
         	libzmq="libzmq3-dev"
         	run_apt
         	check_ufw
@@ -317,8 +321,8 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	fi # ends the 16.04 if-statement
 	if grep -q centos /etc/*elease
 	then
-        	echo "This is CentOS"
-        	echo "Installing $COIN on CentOS from scratch"
+        	echo -e "${RED}This is CentOS"
+        	echo -e "Installing ${GREEN}$COIN ${RED}on CentOS from scratch${NC}"
         	run_yum
         	check_iptables
         	git_install
@@ -326,46 +330,46 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	fi
 	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
-        	echo "This is an unsupported OS"
+        	echo -e "${RED}This is an unsupported OS${NC}"
 	fi # end unsupported OS check
 else
-	echo "$datadir.conf not found"
-	echo "You either have a custom install in a custom location..."
-	echo "...or you have not installed a karmanode yet..."
-	echo -n "Hit any key to continue	:"
+	echo -e "$datadir.conf not found"
+	echo -e "You either have a custom install in a custom location..."
+	echo -e "...or you have not installed a karmanode yet..."
+	echo -e -n "Hit any key to continue	:"
 	read -r goodbye
-	echo ""
-	echo "You will now be sent back to the menu"
-	echo "goodbye"
+	echo -e ""
+	echo -e "You will now be sent back to the menu"
+	echo -e "goodbye"
 	sleep 5
 fi # end if $datadir.conf exists	
 } # end the upgrade
 
 check_iptables () { 
 clear
-	echo "Checking firewall ports..."
+	echo -e "${RED}Checking firewall ports...${NC}"
 	sleep 2
 	if [ "iptables -L INPUT -nv | grep -q $PORT" ]
 	then 
-		echo "Port $PORT already in iptables"
+		echo -e "${RED}Port ${GREEN}$PORT ${RED}already in iptables"
 	else
-		echo "Adding iptables rules - iptables -I INPUT -p tcp --dport $PORT -j ACCEPT"
+		echo -e "${RED}Adding iptables rules - ${GREEN}iptables -I INPUT -p tcp --dport $PORT -j ACCEPT${NC}"
 		iptables -I INPUT -p tcp --dport $PORT -j ACCEPT
 		service iptables save
 	fi
-	echo "Checking SSH port in config..."
+	echo -e "${RED}Checking SSH port in config...${NC}"
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
-	echo "SSH port is port $ssh..."
+	echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
 	if [ "iptables -L INPUT -nv | grep -q $ssh" ]
 	then
-		echo "Port $ssh already in iptables"
+		echo -e "${RED}Port ${GREEN}$ssh ${RED}already in iptables"
 	else
-		echo "Adding ssh port to iptable rules - iptables -I INPUT -p tcp --dport $ssh -j ACCEPT"
+		echo -e "${RED}Adding ssh port to iptable rules - ${GREEN}iptables -I INPUT -p tcp --dport $ssh -j ACCEPT${NC}"
 		iptables -I INPUT -p tcp --dport $ssh -j ACCEPT
 		service iptables save
 	fi
-	echo ""
-	echo "IPtables checked and saved"
+	echo -e ""
+	echo -e "${RED}IPtables checked and saved${NC}"
 	sleep 2
 } # end the iptables function
 
@@ -382,7 +386,7 @@ clear
 	./configure --without-gui
 	make
 	make install
-	echo "$COIN installed"
+	echo -e "${RED}$COIN installed${NC}"
 	sleep 2
 	cd ..
 	rm -rf $homedir/$gitdir
@@ -443,8 +447,8 @@ install () {
 clear
 if grep -q 14.04 /etc/*elease
 then
-	echo "This is Ubuntu 14.04"	
-	echo "Installing $COIN on 14.04.from scratch"
+	echo -e "${RED}This is Ubuntu 14.04"	
+	echo -e "Installing ${GREEN}$COIN ${RED}on 14.04.from scratch${NC}"
 	libzmq="libzmq3"
 	run_apt
 	check_ufw
@@ -454,8 +458,8 @@ then
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease
 then
-	echo "This is Ubuntu 16.04"
-	echo "Installing $COIN on 16.04 from scratch"
+	echo -e "${RED}This is Ubuntu 16.04"
+	echo -e "Installing ${GREEN}$COIN ${RED}on 16.04 from scratch${NC}"
 	libzmq="libzmq3-dev"
 	run_apt
 	check_ufw
@@ -465,8 +469,8 @@ then
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease
 then
-	echo "This is CentOS"
-	echo "Installing $COIN on CentOS from scratch"
+	echo -e "${RED}This is CentOS"
+	echo -e "Installing ${GREEN}$COIN ${RED}on CentOS from scratch${NC}"
 	run_yum
 	check_iptables
 	git_install
@@ -475,7 +479,7 @@ then
 fi
 if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 then
-	echo "This is an unsupported OS" 
+	echo -e "${RED}This is an unsupported OS${NC}" 
 fi # end unsupported OS check
 } # end the karmanode_install function
 
@@ -484,71 +488,32 @@ fi # end unsupported OS check
 ######## ======== UPGRADE FUNCTIONS ======== ########
 upgrade_karmanode () {
 clear
-	echo "This will upgrade your karmanode"
-	echo "Replacing your existing $daemon and $cli with the latest available"
+	echo -e "${RED}This will upgrade your karmanode"
+	echo -e "Replacing your existing ${GREEN}$daemon ${RED}and ${GREEN}$cli ${RED}with the latest available${NC}"
 	sleep 5
-	echo "Checking if $daemon is running..."
-	SERVICE="$daemon"
-	if [ -f /etc/systemd/system/$COIN.service ]; then
-		echo "$COIN Systemd service found!"
-		systemctl status $COIN.service
-		echo "Current status of service above"
-		sleep 5
-		if [ "systemctl status $COIN.service | grep running" ]; then
-			echo "Stopping $COIN via systemd script"
-			systemctl stop $COIN.service
-			sleep 5
-			RESULT=`ps -ef | sed -n /${SERVICE}/p`
-			if [ "${RESULT:-null}" = null ]; then
-				echo "$COIN is not running"
-			else
-				echo "Stopping $daemon forcefully"
-				killall -9 $daemon
-			fi # end if RESULT
-		else
-			echo "$COIN is not running"
-			sleep 5
-		fi # end $COIN.service running
-	else
-		RESULT2=`ps -ef | sed -n /${SERVICE}/p`
-		if [ "${RESULT2:-null}" = null ]; then
-			echo "$daemon is not running"
-		else
-			echo "Stopping $daemon"
-			$cli stop
-			sleep 3
-			RESULT3=`ps -ef | sed -n /${SERVICE}/p`
-			if [ "${RESULT3:-null}" = null ]; then
-				echo "$daemon is not running"
-			else
-				echo "Stopping $daemon forcefully"
-			killall -9 $daemon
-			fi # end if RESULT3
-		fi # end if RESULT2
-	fi	# end if service exists
 if grep -q 14.04 /etc/*elease # This checks if the release file on the server reports Ubuntu 14.04, if not it skips this section
 then
-	echo "This is Ubuntu 14.04"	
-		echo "Upgrading $COIN on 14.04"
+	echo -e "This is Ubuntu 14.04"	
+		echo -e "Upgrading $COIN on 14.04"
 		libzmq="libzmq3"
-		echo "Patching system..."
+		echo -e "Patching system..."
 		# Patches the system, installs required packages and repositories
 		run_apt
-		echo "Installed any missing packages"
+		echo -e "Installed any missing packages"
 		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 		git_install
-		echo "Latest $daemon installed"
+		echo -e "Latest $daemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
-			echo "$COIN Systemd service found!"
+			echo -e "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current status of service above"
+			echo -e "Current status of service above"
 			sleep 5
-			echo "Starting $COIN via systemd script"
+			echo -e "Starting $COIN via systemd script"
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo "Starting $daemon..."
+			echo -e "Starting $daemon..."
 			$daemon start
 				sleep 2
 		start_karmanode
@@ -556,27 +521,27 @@ then
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease # This checks if any release file on the server reports Ubuntu 16.04, if not it skips this section
 then
-	echo "This is Ubuntu 16.04"
-		echo "Installing $COIN on 16.04 from scratch"
+	echo -e "This is Ubuntu 16.04"
+		echo -e "Installing $COIN on 16.04 from scratch"
 		libzmq="libzmq3-dev"
-		echo "Patching system..."
+		echo -e "Patching system..."
 		# Patches the system, installs required packages and repositories
 		run_apt
-		echo "Installed any missing packages"
+		echo -e "Installed any missing packages"
 		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
 		git_install
-		echo "Latest $daemon installed"
+		echo -e "Latest $daemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
-			echo "$COIN Systemd service found!"
+			echo -e "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current status of service above"
+			echo -e "Current status of service above"
 			sleep 5
-			echo "Starting $COIN via systemd script"
+			echo -e "Starting $COIN via systemd script"
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo "Starting $daemon..."
+			echo -e "Starting $daemon..."
 			$daemon start
 				sleep 2
 		start_karmanode
@@ -584,30 +549,30 @@ then
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease # This checks if any release file on the server reports Centos, if not it skips this section
 then
-	echo "This is CentOS"
-		echo "Installing $COIN on CentOS from scratch"
+	echo -e "This is CentOS"
+		echo -e "Installing $COIN on CentOS from scratch"
 		run_yum
-		echo "Installed any missing packages"
+		echo -e "Installed any missing packages"
 		git_install
-		echo "Latest $daemon installed"
+		echo -e "Latest $daemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
-			echo "$COIN Systemd service found!"
+			echo -e "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current status of service above"
+			echo -e "Current status of service above"
 			sleep 5
-			echo "Starting $COIN via systemd script"
+			echo -e "Starting $COIN via systemd script"
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo "Starting $daemon..."
+			echo -e "Starting $daemon..."
 			$daemon start
 				sleep 2
 		start_karmanode
 		fi
 	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
-		echo "This is an unsupported OS" 
+		echo -e "This is an unsupported OS" 
 		# If the above two checks fail, i.e the lsb_release file does not show a supported version of Ubuntu, or any other linux, it will not support it and halt the script from making any changes
 	fi # end unsupported OS check	
 fi # end the centos check if-statement
@@ -616,7 +581,7 @@ fi # end the centos check if-statement
 
 install_service () {
 clear
-echo "Installing systemd script to start at boot and start $daemon...please wait"
+echo -e "Installing systemd script to start at boot and start $daemon...please wait"
 sleep 5
 cat <<EOF > /etc/systemd/system/$COIN.service
 [Unit]
@@ -642,71 +607,33 @@ StartLimitBurst=5
 [Install]
 WantedBy=multi-user.target
 EOF
-
-echo "script installed"
+echo -e "script installed"
 sleep 3
 systemctl enable $COIN.service
-echo "Script enabled"
+echo -e "Script enabled"
 sleep 3
-echo "Checking if $daemon is running..."
-SERVICE="$daemon"
-RESULT=`ps -a | sed -n /${SERVICE}/p`
-if [ "${RESULT:-null}" = null ]; then
-    echo "$COIN is not running"
-else
-    echo "Stopping $daemon"
-    $cli stop
-    sleep 3
-    RESULT2=`ps -a | sed -n /${SERVICE}/p`
-    if [ "${RESULT:-null}" = null ]; then
-    	echo "$COIN is not running"
-    else
-        echo "Stopping $daemon"
-	killall -9 $daemon
-    fi
-fi
-echo "Starting the $COIN.service service"
-echo "Please wait 30 seconds"
-systemctl start $COIN.service
-sleep 30
-echo "Service should have started which you can see below"
-echo ""
-systemctl status $COIN.service
-sleep 3
-echo "The service should show green above"
-echo ""
-sleep 3
-echo "Status of $cli getinfo..."
-sleep 1
-$cli getinfo
-sleep 1
-echo "Status of karmanode status"
-$cli karmanode status
-sleep 3
-echo "done"
-echo ""
-echo "Going back to main menu"
-sleep 3
+stop_daemon
+start_daemon
 }
 
 install_check () {
-echo "Creating check.sh in $currentuser's home directory"
-echo -n "Please paste your wallet address holding your $COIN collateral	:"
+echo -e "Creating check.sh in $currentuser's home directory"
+echo -e -n "Please paste your wallet address holding your $COIN collateral	:"
 read -r add
-echo "Enter your email address if you want notifications	:"
-echo "You will need sendmail installed and configured"
+echo -e "Enter your email address if you want notifications	:"
+echo -e "You will need sendmail installed and configured"
 read -r email
 touch $homedir/check.sh
 cat <<EOF  > $homedir/check.sh
 #!/bin/bash
 
 ipaddr=`curl -s http://whatismyip.akamai.com`
-echo "Your External IP Address is..."
-echo $externalip
+echo -e "Your External IP Address is..."
+echo -e $externalip
 
 abort()
 {
-    echo >&2 '
+    echo -e >&2 '
 ========================================
 === $daemon not running...restarting ===
 ========================================
@@ -714,35 +641,35 @@ abort()
 rm $homedir/.$datadir/mncache.dat -rf
 systemctl start $daemon
 sleep 30
-echo ""
-echo ""
-echo "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== getinfo OUTPUT ===="
    $cli getinfo
-echo "==== getinfo OUTPUT ===="
-echo ""
-echo ""
+echo -e "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
   sleep 30
-echo "==== karmanode status OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
 $cli karmanode status
-echo "==== karmanode status OUTPUT ===="
-echo ""
-echo ""
-echo "==== karmanode list OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== karmanode list OUTPUT ===="
 $cli karmanode list $add
-echo "==== karmanode list OUTPUT ===="
-echo ""
-echo ""
-echo "==== debug.log OUTPUT ===="
+echo -e "==== karmanode list OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== debug.log OUTPUT ===="
 cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
-echo "==== debug.log OUTPUT ===="
-echo ""
-echo ""
-echo "You should see the following message above	:	"
-echo "Enabled! You may shut down the cold daemon."
-echo ""
-echo "This means the karmanode is Enabled"
-echo ""
-echo ""
+echo -e "==== debug.log OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "You should see the following message above	:	"
+echo -e "Enabled! You may shut down the cold daemon."
+echo -e ""
+echo -e "This means the karmanode is Enabled"
+echo -e ""
+echo -e ""
 }
 
 trap 'abort' 0
@@ -751,112 +678,112 @@ set -e
 
 running=`$cli getinfo | grep version`
 if [[ $running == *"version"* ]]; then
-   echo "$COIN RUNNING!"
-   echo "============"
-echo ""
-echo ""
-echo "==== getinfo OUTPUT ===="
+   echo -e "$COIN RUNNING!"
+   echo -e "============"
+echo -e ""
+echo -e ""
+echo -e "==== getinfo OUTPUT ===="
    $cli getinfo
-echo "==== getinfo OUTPUT ===="
-echo ""
-echo ""
+echo -e "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
   sleep 30
-echo "==== karmanode status OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
   $cli karmanode status
-echo "==== karmanode status OUTPUT ===="
-echo ""
-echo ""
-echo "==== karmanode list OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== karmanode list OUTPUT ===="
   $cli karmanode list $add
-echo "==== karmanode list OUTPUT ===="
-echo ""
-echo ""
-echo "==== debug.log OUTPUT ===="
+echo -e "==== karmanode list OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== debug.log OUTPUT ===="
   cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
-echo "==== debug.log OUTPUT ===="
-echo ""
-echo ""
-echo "You should see the following message above	:	"
-echo "Enabled! You may shut down the cold daemon."
-echo ""
-echo "This means the karmanode is Enabled"
-echo ""
-echo ""
+echo -e "==== debug.log OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "You should see the following message above	:	"
+echo -e "Enabled! You may shut down the cold daemon."
+echo -e ""
+echo -e "This means the karmanode is Enabled"
+echo -e ""
+echo -e ""
 fi
 
 check=`$cli karmanode list $add | grep ENABLED`
-echo $check
+echo -e $check
 if [[ $check == *"POS_ERROR"* ]]; then
-   echo "POS ERROR!"
+   echo -e "POS ERROR!"
    systemctl stop $daemon
    sleep 30
    rm $homedir/.$datadir/mncache.dat -rf
    systemctl start $COIN
    sleep 30
-echo ""
-echo ""
-echo "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== getinfo OUTPUT ===="
    $cli getinfo
-echo "==== getinfo OUTPUT ===="
-echo ""
-echo ""
+echo -e "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
   sleep 30
-echo "==== karmanode status OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
 $cli karmanode status
-echo "==== karmanode status OUTPUT ===="
-echo ""
-echo ""
-echo "==== karmanode list OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== karmanode list OUTPUT ===="
 $cli karmanode list $add
-echo "==== karmanode list OUTPUT ===="
-echo ""
-echo ""
-echo "==== debug.log OUTPUT ===="
+echo -e "==== karmanode list OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== debug.log OUTPUT ===="
 cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
-echo "==== debug.log OUTPUT ===="
-echo ""
-echo ""
-echo "You should see the following message above	:	"
-echo "Enabled! You may shut down the cold daemon."
-echo ""
-echo "This means the karmanode is Enabled"
-echo ""
-echo ""
+echo -e "==== debug.log OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "You should see the following message above	:	"
+echo -e "Enabled! You may shut down the cold daemon."
+echo -e ""
+echo -e "This means the karmanode is Enabled"
+echo -e ""
+echo -e ""
 
-echo $check
+echo -e $check
 
 fi
 if [[ $check == *"ENABLED"* ]]; then
-   echo "$COIN ENABLED!"
-echo ""
-echo ""
-echo "==== getinfo OUTPUT ===="
+   echo -e "$COIN ENABLED!"
+echo -e ""
+echo -e ""
+echo -e "==== getinfo OUTPUT ===="
    $cli getinfo
-echo "==== getinfo OUTPUT ===="
-echo ""
-echo ""
+echo -e "==== getinfo OUTPUT ===="
+echo -e ""
+echo -e ""
   sleep 30
-echo "==== karmanode status OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
 $cli karmanode status
-echo "==== karmanode status OUTPUT ===="
-echo ""
-echo ""
-echo "==== karmanode list OUTPUT ===="
+echo -e "==== karmanode status OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== karmanode list OUTPUT ===="
 $cli karmanode list $add
-echo "==== karmanode list OUTPUT ===="
-echo ""
-echo ""
-echo "==== debug.log OUTPUT ===="
+echo -e "==== karmanode list OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "==== debug.log OUTPUT ===="
 cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasternode
-echo "==== debug.log OUTPUT ===="
-echo ""
-echo ""
-echo "You should see the following message above	:	"
-echo "Enabled! You may shut down the cold daemon."
-echo ""
-echo "This means the karmanode is Enabled"
-echo ""
-echo ""
+echo -e "==== debug.log OUTPUT ===="
+echo -e ""
+echo -e ""
+echo -e "You should see the following message above	:	"
+echo -e "Enabled! You may shut down the cold daemon."
+echo -e ""
+echo -e "This means the karmanode is Enabled"
+echo -e ""
+echo -e ""
 
 fi
 
@@ -868,15 +795,15 @@ if [ "$email" != "" ]
 then
 	chmod +x ~/check.sh
 	sudo -u $currentuser crontab -l > mycron
-	echo "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email"
-	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email" >> mycron
+	echo -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email"
+	sudo -u $currentuser echo -e -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir karmanode status' $email" >> mycron
 	sudo -u $currentuser crontab mycron
 	sudo -u $currentuser rm mycron
 else
 	chmod +x $homedir/check.sh
 	sudo -u $currentuser crontab -l > mycron
-	echo "*/30 * * * * $homedir/check.sh"
-	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh" >> mycron
+	echo -e "*/30 * * * * $homedir/check.sh"
+	sudo -u $currentuser echo -e -e "*/30 * * * * $homedir/check.sh" >> mycron
 	sudo -u $currentuser crontab mycron
 	sudo -u $currentuser rm mycron
 fi
@@ -884,10 +811,10 @@ fi
 
 amiroot () {
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root"
-   echo "Run this script again as root or sudo"
-   echo "e.g sudo ./install_ohm.sh"
-   echo "this script will now exit"
+   echo -e "${RED}This script must be run as root"
+   echo -e "Run this script again as root or sudo"
+   echo -e "e.g sudo ./install_ohm.sh"
+   echo -e "this script will now exit${NC}"
    exit 1
 fi
 currentuser=$(who | awk '{print $1}')
@@ -903,35 +830,35 @@ menu () {
 while :
 do
     clear
-echo "===================================================="
-echo "==          Karmanode Wallet Installer            =="
-echo "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
-echo "==                  version 2.0                   =="
-echo "==                                                =="
-echo "== Please donate:                                 =="
-echo "== Bitcoin:  19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT   =="
-echo "== Litecoin: LiBKYy6ZpCzTPpkqYaHPmjfuiQiLvxkNDE   =="
-echo "== Shekel:   JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   =="
-echo "== Ohm:      ZFjLmdQittBwSmJMCAHQkQfbuNV4Gs2vUu   =="
-echo "==                                                =="
-echo "==         Copyright Cryptojatt(c) 2018           ==" 
-echo "==         https://github.com/cryptojatt          =="
-echo "----------------------------------------------------"
-echo ""
-echo "Please consider donating for my time and effort I put into this	:" 
-echo ""
+echo -e "${RED}===================================================="
+echo -e "==          Karmanode Wallet Installer            =="
+echo -e "==      For Ubuntu 14.04 or 16.04 or CentOS7      =="
+echo -e "==                  version 2.0                   =="
+echo -e "==                                                =="
+echo -e "== Please donate:                                 =="
+echo -e "== Bitcoin:  19rUHQQ2PNGzGzvLgoY9SiEwUCcNxJ2cqT   =="
+echo -e "== Litecoin: LiBKYy6ZpCzTPpkqYaHPmjfuiQiLvxkNDE   =="
+echo -e "== Shekel:   JQJ1GanDU3c5RZwNjBXk68wFdxEJKLwWZU   =="
+echo -e "== Ohm:      ZFjLmdQittBwSmJMCAHQkQfbuNV4Gs2vUu   =="
+echo -e "==                                                =="
+echo -e "==         Copyright Cryptojatt(c) 2018           ==" 
+echo -e "==         https://github.com/cryptojatt          =="
+echo -e "----------------------------------------------------"
+echo -e "${NC}"
+echo -e "Please consider donating for my time and effort I put into this	:" 
+echo -e ""
 sleep 1
 amiroot
 cat <<EOF
-    Please enter your choice:
+$(echo -e    "${RED}    Please enter your choice:")
 
-    Install Wallet & Set Up karmanode  (1)
+$(echo -e    "${GREEN}    Install Wallet & Set Up karmanode  (1)")
     Upgrade Wallet & Start karmanode   (2)
     Start karmanode                    (3)
     Install Systemd Service	       (4)
     Install check script	       (5)
            			       (Q)uit
-    ------------------------------
+$(echo -e    "${NC}    ------------------------------")
 EOF
     read -n1 -s
     case "$REPLY" in
@@ -941,8 +868,8 @@ EOF
     "4")  install_service ;;
     "5")  install_check ;;
     "Q")  exit                      ;;
-    "q")  echo "case sensitive!!"   ;; 
-     * )  echo "invalid option"     ;;
+    "q")  echo -e "case sensitive!!"   ;; 
+     * )  echo -e "invalid option"     ;;
     esac
     sleep 1
 done
