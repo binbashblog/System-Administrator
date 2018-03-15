@@ -116,23 +116,23 @@ check_ufw () {
 clear
   echo "Checking firewall ports..."
 	sleep 2
-	STATUS='ufw status'
-	echo $STATUS | grep "$PORT/tcp" > /dev/null
-	  if [ $? -gt 0 ]; then
-			echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
-			ufw allow $PORT/tcp > /dev/null
-			echo "$PORT has been allowed"
-		else
+	ufw status  | grep $PORT
+	  if [ `ufw status | grep -q $PORT` ]; then
 			echo "Port $PORT already in UFW"
+		else
+			echo "Adding port $PORT to UFW rules - ufw allow $PORT/tcp"
+                        ufw allow $PORT/tcp > /dev/null
+                        echo "$PORT has been allowed"
 		fi
 	echo "Checking SSH port in config..."
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo "SSH port is port $ssh..."
-	if [ "ufw status | grep -q $ssh/tcp" ]; then
+	ufw status | grep $ssh
+	if [ `ufw status | grep -q $ssh` ]; then
           echo "Port $ssh already in UFW"
   else
-          echo "Adding ssh port to UFW rules - ufw allow $ssh/tcp"
-          ufw allow $ssh/tcp > /dev/null
+          echo "Adding ssh port to UFW rules - ufw limit $ssh/tcp comment 'SSH port rate limit'"
+          ufw limit $ssh/tcp comment 'SSH port rate limit' > /dev/null
  fi
  echo ""
  echo "UFW checked"
