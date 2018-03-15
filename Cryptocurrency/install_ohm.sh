@@ -276,7 +276,7 @@ clear
 	echo -e "if not check your cold wallet's status or try ${GREEN}'$cli karmanode status' ${RED}again, or restart if you still can't see it${NC}"
 	echo -e ""
 	sleep 2
-	${GREEN}cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
+	cat $homedir/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
 	sleep 2
 	echo -e "${RED}You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
