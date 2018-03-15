@@ -372,7 +372,7 @@ apt-get install -yq \
 	software-properties-common \
 	$libzmq \
 	libminiupnpc-dev &&
-if [ ! -e /etc/apt/sources.list.d/bitcoin-bitcoin-trusty.list ] || [ ! -e /etc/apt/sources.list.d/bitcoin-ubuntu-bitcoin-xenial.list ]
+if [ ! -f "/etc/apt/sources.list.d/bitcoin-bitcoin-trusty.list" ] || [ ! -f "/etc/apt/sources.list.d/bitcoin-ubuntu-bitcoin-xenial.list" ]
 then 
    	add-apt-repository ppa:bitcoin/bitcoin -y
 	apt-get update
