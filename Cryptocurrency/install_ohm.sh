@@ -56,7 +56,7 @@ if [ -f ~/.$datadir/$datadir.conf ]; then
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating ~/.$datadir/$datadir.conf" & wait $!
 	echo -e rpcuser=$rpcuser >> ~/.$datadir/$datadir.conf & wait $!
-	echo -e rpcpassword=$rpcpassword >> ~/.$datadir/$datadir.conf & wait $!
+	echo -e $rpcpassword >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e rpcallowip=127.0.0.1 >> ~/.$datadir/$datadir.conf & wait $!
 	#echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
 	echo -e staking=1 >> ~/.$datadir/$datadir.conf & wait $!
@@ -70,20 +70,21 @@ if [ -f ~/.$datadir/$datadir.conf ]; then
 	echo -e karmanodeprivkey= >> ~/.$datadir/$datadir.conf & wait $!
 	sleep 2
 	echo "Your rpcuser is $rpcuser"
-	echo ""
-	echo "Your rpcuser is $rpcpassword"
+	echo "Your rpcpassword is $rpcpassword"
 	echo "Make sure to save your rpc username and password for your cold wallet later"
 	echo -n "Press any key to continue"
+	read -r cont
+	echo ""
 	echo -n "enter the karmanodeprivatekey		:"
 	read -r karmanodeprivkey
 	echo "These were your answers		:"
 	echo ""
 	echo ""
-	echo $rpcuser
+	echo "rpcuser=$rpcuser"
 	echo $rpcpassword
 	echo $externalip
 	echo $karmanodeprivkey
-	sleep 2
+	sleep 5
 	echo "Using your answers to generate the .conf"
 	#sed -i '/externalip/c\' ~/.$datadir/$datadir.conf
 	#echo "externalip=$externalip:$PORT" >> ~/.$datadir/$datadir.conf
@@ -93,6 +94,7 @@ if [ -f ~/.$datadir/$datadir.conf ]; then
 	echo "karmanodeprivkey=$karmanodeprivkey" >> ~/.$datadir/$datadir.conf
 	sleep 2
 	echo "Configuration completed successfully"
+	sleep 2
 else
         echo "$datadir.conf not found"
 	echo "This means the daemon install failed and the daemon didn't run properly"
@@ -139,16 +141,41 @@ clear
 
 start_karmanode () {
 clear
-	echo "starting $daemon..."
-	$daemon
-	echo "Waiting for $DAEMON to start and begin to sync..."
+echo "starting $daemon..."
+SERVICE="$daemon"
+        if [ -f /etc/systemd/system/$COIN.service ]; then
+                echo "$COIN Systemd service found!"
+                systemctl start $COIN.service
+		echo "Starting $COIN.service..."
+		sleep 5
+                if [ "systemctl status $COIN.service | grep running" ]; then
+                        echo "$COIN service is running"
+                else
+                        echo "Error! $COIN is not running"
+			echo "There may be a problem with the service"
+			echo "You may need to quit the script and start the karmanode manually!"
+                        sleep 5
+                fi # end $COIN.service running
+        else
+                RESULT2=`ps -ef | sed -n /${SERVICE}/p`
+                if [ "${RESULT2:-null}" = null ]; then
+                        echo "$daemon is not running"
+                        echo "Starting $daemon..."
+                        $daemon 
+                        sleep 5
+                        RESULT3=`ps -ef | sed -n /${SERVICE}/p`
+                        if [ "${RESULT3:-null}" != null ]; then
+                                echo "$daemon is running!"
+                        fi # end if RESULT3
+                fi # end if RESULT2
+        fi      # end if service exists
 	sleep 2
 	echo "While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
 	echo "Go to your cold wallet, open Tools > Debug console	"
 	echo "enter 	karmanode list-conf     into the console"
 	echo ""
-	sleep 10
+	sleep 5
 	echo "You should see your karmanode with a status of MISSING"
 	echo ""
 	sleep 5
@@ -194,14 +221,38 @@ clear
 		echo "$daemon is not running"
 	else
 		echo "Forcing $daemon to stop"
-		killall -9 $datadir`d`
+		killall -9 $daemon
 	fi #end if RESULT:-null
 	sleep 5
 	echo "deleting mncache file..."
 	rm ~/.$datadir/mncache.dat -rf
 	sleep 2
-	echo "Starting $daemon"
-	$daemon start
+	if [ -f /etc/systemd/system/$COIN.service ]; then
+                echo "$COIN Systemd service found!"
+                systemctl start $COIN.service
+                echo "Starting $COIN.service..."
+                sleep 5
+                if [ "systemctl status $COIN.service | grep running" ]; then
+                        echo "$COIN service is running"
+                else
+                        echo "Error! $COIN is not running"
+                        echo "There may be a problem with the service"
+                        echo "You may need to quit the script and start the karmanode manually!"
+                        sleep 5
+                fi # end $COIN.service running
+        else
+                RESULT2=`ps -ef | sed -n /${SERVICE}/p`
+                if [ "${RESULT2:-null}" = null ]; then
+                        echo "$daemon is not running"
+                        echo "Starting $daemon..."
+                        $daemon
+                        sleep 5
+                        RESULT3=`ps -ef | sed -n /${SERVICE}/p`
+                        if [ "${RESULT3:-null}" != null ]; then
+                                echo "$daemon is running!"
+                        fi # end if RESULT3
+                fi # end if RESULT2
+        fi      # end if service exists
     	echo "Please wait 30 seconds"
 	sleep 30
 	echo "Running mnsync reset"
@@ -217,7 +268,7 @@ clear
 	echo "if not check your cold wallet's status or try '$cli karmanode status' again, or restart if you still can't see it"
 	echo ""
 	sleep 2
-	cat ~/.$datadir/debug.log | grep CActivekarmanode::EnableHotColdkarmanode
+	cat ~/.$datadir/debug.log | grep CActiveKarmanode::EnableHotColdMasterNode
 	sleep 2
 	echo "You should see the enabled message above, if not you will need to troubleshoot further"
 	sleep 5
@@ -359,6 +410,9 @@ then
 	libzmq="libzmq3"
 	run_apt
 	check_ufw
+	git_install
+	configure
+	start_karmanode
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease
 then
@@ -367,6 +421,9 @@ then
 	libzmq="libzmq3-dev"
 	run_apt
 	check_ufw
+	git_install
+	configure
+	start_karmanode
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease
 then
@@ -374,14 +431,14 @@ then
 	echo "Installing $COIN on CentOS from scratch"
 	run_yum
 	check_iptables
+	git_install
+	configure
+	start_karmanode
 fi
 if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 then
 	echo "This is an unsupported OS" 
 fi # end unsupported OS check
-git_install
-configure
-start_karmanode
 } # end the karmanode_install function
 
 
@@ -397,7 +454,7 @@ clear
 	if [ -f /etc/systemd/system/$COIN.service ]; then
 		echo "$COIN Systemd service found!"
 		systemctl status $COIN.service
-		echo "Current staus of service above"
+		echo "Current status of service above"
 		sleep 5
 		if [ "systemctl status $COIN.service | grep running" ]; then
 			echo "Stopping $COIN via systemd script"
@@ -430,7 +487,7 @@ clear
 			killall -9 $daemon
 			fi # end if RESULT3
 		fi # end if RESULT2
-	fi	# end if shekel.service exists
+	fi	# end if service exists
 if grep -q 14.04 /etc/*elease # This checks if the release file on the server reports Ubuntu 14.04, if not it skips this section
 then
 	echo "This is Ubuntu 14.04"	
@@ -447,7 +504,7 @@ then
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current staus of service above"
+			echo "Current status of service above"
 			sleep 5
 			echo "Starting $COIN via systemd script"
 			systemctl start $COIN.service
@@ -456,6 +513,7 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		start_karmanode
 		fi
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease # This checks if any release file on the server reports Ubuntu 16.04, if not it skips this section
@@ -474,7 +532,7 @@ then
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current staus of service above"
+			echo "Current status of service above"
 			sleep 5
 			echo "Starting $COIN via systemd script"
 			systemctl start $COIN.service
@@ -483,6 +541,7 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		start_karmanode
 		fi
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease # This checks if any release file on the server reports Centos, if not it skips this section
@@ -497,7 +556,7 @@ then
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo "$COIN Systemd service found!"
 			systemctl status $COIN.service
-			echo "Current staus of service above"
+			echo "Current status of service above"
 			sleep 5
 			echo "Starting $COIN via systemd script"
 			systemctl start $COIN.service
@@ -506,6 +565,7 @@ then
 			echo "Starting $daemon..."
 			$daemon start
 				sleep 2
+		start_karmanode
 		fi
 	if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 	then
@@ -578,7 +638,7 @@ sleep 3
 echo "The service should show green above"
 echo ""
 sleep 3
-echo "Status of shekel-cli getinfo..."
+echo "Status of $cli getinfo..."
 sleep 1
 $cli getinfo
 sleep 1
@@ -604,7 +664,7 @@ cat <<EOF  > ~/check.sh
 
 ipaddr=`curl -s http://whatismyip.akamai.com`
 echo "Your External IP Address is..."
-echo $ipaddr
+echo $externalip
 
 abort()
 {
