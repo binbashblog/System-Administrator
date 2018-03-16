@@ -67,7 +67,7 @@ then
                 sleep 5
         fi # end $COIN.service running
 else	
-	if pgrep -x "$daemon" > /dev/null
+	if [ pgrep -x "$daemon" > /dev/null ];
 	then
 		echo -e "${RED}$daemon is running${NC}"
 	else
@@ -99,7 +99,7 @@ then
                 sleep 5
         fi # end $COIN.service running
 else
-        if pgrep -x "$daemon" > /dev/null
+        if [ pgrep -x "$daemon" > /dev/null ];
         then
         	echo -e "${RED}$daemon is stopping${NC}"
 		$cli stop
@@ -116,20 +116,21 @@ clear
 rpcuser="ohmrpc"
 rpcpassword=$($daemon 2>&1 | grep '^rpcpassword=')
 echo -e "${RED}$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
-chown $currentuser:$currentuser $homedir/.$datadir -R
+echo "chown $currentuser:$currentuser $homedir/.$datadir -R"
+"chown $currentuser:$currentuser $homedir/.$datadir -R"
 sleep 2
 echo -e "${RED}Checking $homedir/.$datadir/$datadir.conf exists${NC}" & wait $!
 if [ -f $homedir/.$datadir/$datadir.conf ]; then
         echo -e "${RED}$datadir.conf exists!"
-        echo -e "Proceeding with configuring masternode...${RED}"
+        echo -e "Proceeding with configuring masternode...${NC}"
         sleep 2
 	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	echo "generating $homedir/.$datadir/$datadir.conf" & wait $!
 	echo rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo  $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
 	echo rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	#echo -e -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
+	#echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
 	echo staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	echo listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
 	echo daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
@@ -143,10 +144,10 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	echo -e "${RED}Your rpcuser is ${GREEN}$rpcuser"
 	echo -e "${RED}Your rpcpassword is ${GREEN}$rpcpassword"
 	echo -e "${RED}Make sure to save your rpc username and password for your cold wallet later"
-	echo -e -n "Press enter key to continue"
+	echo -e -n "Press enter key to continue${NC}"
 	read -r cont
 	echo -e ""
-	echo -e -n "enter the karmanodeprivatekey		:"
+	echo -n "enter the karmanodeprivatekey		:"
 	read -r karmanodeprivkey
 	echo -e "These were your answers		:"
 	echo -e ""
@@ -183,38 +184,38 @@ fi
 	
 check_ufw () {	
 clear
-  echo -e "${RED}Checking firewall ports...${NC}"
-	sleep 2
-	ufw status  | grep $PORT
-	  if [ `ufw status | grep $PORT` ]; then
-			echo -e "${RED}Port ${GREEN}$PORT${RED} already in UFW${NC}"
-		else
-			echo -e "${RED}Adding port ${GREEN}$PORT${RED} to UFW rules - ${GREEN}ufw allow $PORT/tcp${NC}"
-                        ufw allow $PORT/tcp > /dev/null
-                        echo -e "${GREEN}$PORT${RED} has been allowed${NC}"
-		fi
-	echo -e "${RED}Checking SSH port in config...${NC}"
-	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
-	echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
-	ufw status | grep $ssh
-	if [ `ufw status | grep $ssh` ]; then
-          echo -e "${RED}Port ${GREEN}$ssh ${RED}already in UFW${NC}"
-  else
-          echo -e "${RED}Adding ssh port to UFW rules - ${GREEN}ufw limit $ssh/tcp comment 'SSH port rate limit'${NC}"
-          ufw limit $ssh/tcp comment 'SSH port rate limit' > /dev/null
-	if [ `¬ufw statu | grep -qw active` ]; then
-		echo -e "${RED}ufw is active${NC}"
-	else
-		echo -e "${RED}UFW is inactive..."
-		echo -e "Activating UFW${NC}"
-		ufw enable
-	fi
- fi
- echo -e ""
- echo -e "${RED}UFW checked${NC}"
- sleep 2
- echo -e ""
- clear
+echo -e "${RED}Checking firewall ports...${NC}"
+sleep 2
+#ufw status  | grep $PORT
+if [ "ufw status | grep $PORT" ]; then
+	echo -e "${RED}Port ${GREEN}$PORT${RED} already in UFW${NC}"
+else
+	echo -e "${RED}Adding port ${GREEN}$PORT${RED} to UFW rules - ${GREEN}ufw allow $PORT/tcp${NC}"
+	ufw --force allow $PORT/tcp > /dev/null
+	echo -e "${GREEN}$PORT${RED} has been allowed${NC}"
+fi
+echo -e "${RED}Checking SSH port in config...${NC}"
+ssh="`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`"
+echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
+if [ "ufw status | grep $ssh" ]; then
+	echo -e "${RED}Port ${GREEN}$ssh ${RED}already in UFW${NC}"
+else
+	echo -e "${RED}Adding ssh port to UFW rules - ${GREEN}ufw limit $ssh/tcp comment 'SSH port rate limit'${NC}"
+	ufw --force limit $ssh/tcp comment 'SSH port rate limit' > /dev/null
+fi
+if [ "¬ufw satus | grep -qw active" ];
+then
+	echo -e "${RED}UFW is active${NC}"
+else
+	echo -e "${RED}UFW is inactive..."
+	echo -e "Activating UFW${NC}"
+	ufw --force enable
+fi
+
+echo -e ""
+echo -e "${RED}UFW checked${NC}"
+sleep 2
+echo -e ""
 }
 
 start_karmanode () {
@@ -533,7 +534,7 @@ then
 			sleep 5
 		else
 			echo -e "Starting $daemon..."
-			$daemon start
+			$daemon -daemon
 				sleep 2
 		start_karmanode
 		fi
@@ -561,7 +562,7 @@ then
 			sleep 5
 		else
 			echo -e "Starting $daemon..."
-			$daemon start
+			$daemon -daemon
 				sleep 2
 		start_karmanode
 		fi
@@ -585,7 +586,7 @@ then
 			sleep 5
 		else
 			echo -e "Starting $daemon..."
-			$daemon start
+			$daemon -daemon
 				sleep 2
 		start_karmanode
 		fi
@@ -658,7 +659,7 @@ abort()
 ========================================
 '
 rm $homedir/.$datadir/mncache.dat -rf
-systemctl start $daemon
+systemctl start $COIN.service
 sleep 30
 echo -e ""
 echo -e ""
@@ -734,7 +735,7 @@ check=`$cli karmanode list $add | grep ENABLED`
 echo -e $check
 if [[ $check == *"POS_ERROR"* ]]; then
    echo -e "POS ERROR!"
-   systemctl stop $daemon
+   systemctl stop $COIN
    sleep 30
    rm $homedir/.$datadir/mncache.dat -rf
    systemctl start $COIN
@@ -836,8 +837,8 @@ if [[ $EUID -ne 0 ]]; then
    echo -e "this script will now exit${NC}"
    exit 1
 fi
-currentuser=$(who | awk '{print $1}')
-if [ "$currentuser" == "root" ]
+currentuser="`who | awk '{print $1}'`"
+if [ "$currentuser" == "root" ];
 then
 	homedir="/root"
 else
