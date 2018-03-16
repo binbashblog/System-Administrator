@@ -186,7 +186,7 @@ clear
   echo -e "${RED}Checking firewall ports...${NC}"
 	sleep 2
 	ufw status  | grep $PORT
-	  if [ `ufw status | grep -q $PORT` ]; then
+	  if [ `ufw status | grep $PORT` ]; then
 			echo -e "${RED}Port ${GREEN}$PORT${RED} already in UFW${NC}"
 		else
 			echo -e "${RED}Adding port ${GREEN}$PORT${RED} to UFW rules - ${GREEN}ufw allow $PORT/tcp${NC}"
@@ -197,11 +197,18 @@ clear
 	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
 	echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
 	ufw status | grep $ssh
-	if [ `ufw status | grep -q $ssh` ]; then
+	if [ `ufw status | grep $ssh` ]; then
           echo -e "${RED}Port ${GREEN}$ssh ${RED}already in UFW${NC}"
   else
           echo -e "${RED}Adding ssh port to UFW rules - ${GREEN}ufw limit $ssh/tcp comment 'SSH port rate limit'${NC}"
           ufw limit $ssh/tcp comment 'SSH port rate limit' > /dev/null
+	if [ `¬ufw statu | grep -qw active` ]; then
+		echo -e "${RED}ufw is active${NC}"
+	else
+		echo -e "${RED}UFW is inactive..."
+		echo -e "Activating UFW${NC}"
+		ufw enable
+	fi
  fi
  echo -e ""
  echo -e "${RED}UFW checked${NC}"
