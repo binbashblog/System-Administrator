@@ -385,6 +385,18 @@ clear
 	./autogen.sh
 	./configure --without-gui
 	make
+	if [ -f "/usr/local/bin/$daemon" ]; 
+	then 
+		echo -e "${RED}found existing ${GREEN}$daemon"
+		echo -e "${RED}Deleting existing daemon${NC}"
+		make uninstall
+		if [ -f "/usr/local/bin/$daemon" ] || [ -f "/usr/local/bin/$cli" ];
+		then
+		rm /usr/local/bin/$daemon
+		rm /usr/local/bin/$cli
+		echo -e "${RED}$daemon and $cli manually deleted${NC}"
+		fi
+	fi
 	make install
 	echo -e "${RED}$COIN installed${NC}"
 	sleep 2
