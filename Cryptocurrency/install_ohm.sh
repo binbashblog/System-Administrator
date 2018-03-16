@@ -464,13 +464,6 @@ yum -y -q install \
 	zeromq
 }
 
-test () {
-clear
-check_ufw
-configure
-start_karmanode
-}
-
 install () {
 clear
 if grep -q 14.04 /etc/*elease
@@ -889,7 +882,6 @@ $(echo -e    "${NC}    ------------------------------")
 EOF
     read -n1 -s
     case "$REPLY" in
-    "T")  test ;;
     "1")  install ;;
     "2")  upgrade ;;
     "3")  start_karmanode ;;
