@@ -35,7 +35,7 @@ daemon="ohmcd"
 cli="ohmc-cli"
 gitdir="ohmcoin"
 GITREPO="https://github.com/theohmproject/ohmcoin.git"
-getblockcount="http://explore.ohmcoin.org/api/getblockcount"
+getblockcount="`curl -s http://explore.ohmcoin.org/api/getblockcount`"
 PORT="52020"
 externalip="`curl -s http://whatismyip.akamai.com`"
 ##### CHANGABLE VARIABLES #####
@@ -67,7 +67,7 @@ then
                 sleep 5
         fi # end $COIN.service running
 else	
-	if [ pgrep -x "$daemon" > /dev/null ];
+	if pgrep -x $daemon > /dev/null
 	then
 		echo -e "${RED}$daemon is running${NC}"
 	else
@@ -99,7 +99,7 @@ then
                 sleep 5
         fi # end $COIN.service running
 else
-        if [ pgrep -x "$daemon" > /dev/null ];
+        if pgrep -x $daemon > /dev/null
         then
         	echo -e "${RED}$daemon is stopping${NC}"
 		$cli stop
@@ -114,10 +114,10 @@ fi
 configure () { 
 clear
 rpcuser="ohmrpc"
-rpcpassword=$($daemon 2>&1 | grep '^rpcpassword=')
+rpcpassword=`$daemon 2>&1 | grep '^rpcpassword='`
 echo -e "${RED}$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
-echo "chown $currentuser:$currentuser $homedir/.$datadir -R"
-"chown $currentuser:$currentuser $homedir/.$datadir -R"
+owner=$(chown $currentuser:$currentuser $homedir/.$datadir -R)
+echo $owner
 sleep 2
 echo -e "${RED}Checking $homedir/.$datadir/$datadir.conf exists${NC}" & wait $!
 if [ -f $homedir/.$datadir/$datadir.conf ]; then
@@ -221,6 +221,7 @@ echo -e ""
 start_karmanode () {
 clear
 	start_daemon
+#ohmcd -daemon
 	sleep 2
 	echo -e "${RED}While waiting for the chain to sync, continue with the following steps	:"
 	sleep 2
@@ -242,17 +243,17 @@ clear
 	echo -e "The script will now wait for the local wallet to sync with the chain...please wait${NC}"
 	Getdiff=5
 	IsItSynced() {
-	Checkblockchain="`wget -O - $getblockcount`"
-	Checkblockcount="`$cli getblockcount`"
-	Getdiff="`expr $Checkblockchain - $Checkblockcount`"
-	current_date_time="`date "+%Y-%m-%d %H:%M:%S"`";
+	Checkblockchain=$getblockcount
+	Checkblockcount=`$cli getblockcount`
+	Getdiff=`expr $Checkblockchain - $Checkblockcount`
+	current_date_time=`date "+%Y-%m-%d %H:%M:%S"`
 	sleep 10
 	}
 	while [[ $Getdiff -gt 1 ]]
 	do
-	IsItSynced 2>/dev/null
+	IsItSynced 2> /dev/null
 	echo -e ""
-	echo -e $current_date_time;
+	echo -e $current_date_time
 	echo -e ""
 	echo -e "${RED}Explorer Block is ${GREEN}$Checkblockchain"
 	echo -e "${RED}Local Wallet Block is ${GREEN}$Checkblockcount"
@@ -461,6 +462,13 @@ yum -y -q install \
 	curl \
 	miniupnpc-devel \
 	zeromq
+}
+
+test () {
+clear
+check_ufw
+configure
+start_karmanode
 }
 
 install () {
@@ -837,7 +845,7 @@ if [[ $EUID -ne 0 ]]; then
    echo -e "this script will now exit${NC}"
    exit 1
 fi
-currentuser="`who | awk '{print $1}'`"
+currentuser=$(logname)
 if [ "$currentuser" == "root" ];
 then
 	homedir="/root"
@@ -868,7 +876,6 @@ echo -e "${NC}"
 echo -e "Please consider donating for my time and effort I put into this	:" 
 echo -e ""
 sleep 1
-amiroot
 cat <<EOF
 $(echo -e    "${RED}    Please enter your choice:")
 
@@ -882,6 +889,7 @@ $(echo -e    "${NC}    ------------------------------")
 EOF
     read -n1 -s
     case "$REPLY" in
+    "T")  test ;;
     "1")  install ;;
     "2")  upgrade ;;
     "3")  start_karmanode ;;
@@ -894,5 +902,5 @@ EOF
     sleep 1
 done
 } # end menu while loop
-
+amiroot
 menu #start menu function
