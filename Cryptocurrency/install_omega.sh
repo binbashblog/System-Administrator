@@ -29,15 +29,19 @@
 # 
 
 ##### CHANGABLE VARIABLES #####
-COIN="shekel"
-datadir="shekel"
-daemon="shekeld"
-cli="shekel-cli"
-gitdir="JewNew"
-GITREPO="https://github.com/shekeltechnologies/JewNew.git"
-getblockcount="`curl -s http://shekelchain.com/api/getblockcount`"
-PORT="5500"
+COIN="omegacoin"
+datadir="omegacoincore"
+dataconf="omegacoin"
+daemon="omegacoind"
+cli="omegacoin-cli"
+gitdir="omegacoincore"
+GITREPO="https://github.com/omegacoinnetwork/omegacoin.git"
+getblockcount="`curl -s https://explorer.omegacoin.network/api/getblockcount`"
+PORT="7777"
 externalip="`curl -s http://whatismyip.akamai.com`"
+hassentinel="y"
+sentinelgit="https://github.com/omegacoinnetwork/sentinel.git"
+
 ##### CHANGABLE VARIABLES #####
 
 RED='\033[0;31m'
@@ -119,27 +123,30 @@ echo -e "${RED}$daemon has been run once, it should have created the .$datadir d
 owner=$(chown $currentuser:$currentuser $homedir/.$datadir -R)
 echo $owner
 sleep 2
-echo -e "${RED}Checking $homedir/.$datadir/$datadir.conf exists${NC}" & wait $!
-if [ -f $homedir/.$datadir/$datadir.conf ]; then
-        echo -e "${RED}$datadir.conf exists!"
+echo -e "${RED}Checking $homedir/.$datadir/$dataconf.conf exists${NC}" & wait $!
+if [ -f $homedir/.$datadir/$dataconf.conf ]; then
+        echo -e "${RED}$dataconf.conf exists!"
         echo -e "Proceeding with configuring masternode...${NC}"
         sleep 2
 	#rpcuser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 	#rpcpassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-	echo "generating $homedir/.$datadir/$datadir.conf" & wait $!
-	echo rpcuser=$rpcuser >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo $rpcpassword >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo rpcallowip=127.0.0.1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo "generating $homedir/.$datadir/$dataconf.conf" & wait $!
+	echo rpcuser=$rpcuser >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo $rpcpassword >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo rpcallowip=127.0.0.1 >> $homedir/.$datadir/$dataconf.conf & wait $!
 	#echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
-	echo staking=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo listen=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo daemon=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo logtimestamps=1 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo maxconnections=256 >> $homedir/.$datadir/$datadir.conf & wait $!
-	echo masternode=1 >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo staking=1 >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo listen=1 >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo daemon=1 >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo logtimestamps=1 >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo maxconnections=256 >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo masternode=1 >> $homedir/.$datadir/$dataconf.conf & wait $!
 	#echo -e -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
 	#echo -e -e masternodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
-	echo masternodeprivkey= >> $homedir/.$datadir/$datadir.conf & wait $!
+	echo masternodeprivkey= >> $homedir/.$datadir/$dataconf.conf & wait $!
+	echo "addnode=142.208.127.121" >> $homedir/.$datadir/$dataconf.conf & wait $! #OMEGA SPECIFIC
+	echo "addnode=154.208.127.121" >> $homedir/.$datadir/$dataconf.conf & wait $! #OMEGA SPECIFIC
+	echo "addnode=142.208.122.127" >> $homedir/.$datadir/$dataconf.conf & wait $! #OMECA SPECIFIC
 	sleep 2
 	echo -e "${RED}Your rpcuser is ${GREEN}$rpcuser"
 	echo -e "${RED}Your rpcpassword is ${GREEN}$rpcpassword"
@@ -162,8 +169,8 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
 	#echo -e "externalip=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
 	#sed -i '/masternodeaddr/c\' $homedir/.$datadir/$datadir.conf
 	#echo -e "masternodeaddr=$externalip:$PORT" >> $homedir/.$datadir/$datadir.conf
-	sed -i '/masternodeprivkey/c\' $homedir/.$datadir/$datadir.conf
-	echo "masternodeprivkey=$masternodeprivkey" >> $homedir/.$datadir/$datadir.conf
+	sed -i '/masternodeprivkey/c\' $homedir/.$datadir/$dataconf.conf
+	echo "masternodeprivkey=$masternodeprivkey" >> $homedir/.$datadir/$dataconf.conf
 	sleep 2
 	echo -e "${RED}Configuration completed successfully${NC}"
 	sleep 2
@@ -301,9 +308,9 @@ clear
 upgrade () { 
 clear
 stop_daemon
-echo -e "Checking $homedir/.$datadir/$datadir.conf exists" & wait $!
-if [ -f $homedir/.$datadir/$datadir.conf ]; then
-	echo -e "${RED}$datadir.conf exists!"
+echo -e "Checking $homedir/.$datadir/$dataconf.conf exists" & wait $!
+if [ -f $homedir/.$datadir/$dataconf.conf ]; then
+	echo -e "${RED}$dataconf.conf exists!"
 	echo -e "Proceeding with upgrade...${NC}"
 	sleep 2
 	clear
@@ -341,7 +348,7 @@ if [ -f $homedir/.$datadir/$datadir.conf ]; then
         	echo -e "${RED}This is an unsupported OS${NC}"
 	fi # end unsupported OS check
 else
-	echo -e "$datadir.conf not found"
+	echo -e "$dataconf.conf not found"
 	echo -e "You either have a custom install in a custom location..."
 	echo -e "...or you have not installed a masternode yet..."
 	echo -e -n "Hit enter key to continue	:"
@@ -475,6 +482,7 @@ then
 	git_install
 	configure
 	start_masternode
+	install_sentinel
 fi # ends the 14.04 if-statement
 if grep -q 16.04 /etc/*elease
 then
@@ -486,6 +494,7 @@ then
 	git_install
 	configure
 	start_masternode
+	install_sentinel
 fi # ends the 16.04 if-statement
 if grep -q centos /etc/*elease
 then
@@ -502,6 +511,29 @@ then
 	echo -e "${RED}This is an unsupported OS${NC}" 
 fi # end unsupported OS check
 } # end the masternode_install function
+
+install_sentinel () {
+if $hassentinel == "y";
+then
+clear
+        # Downloads and extracts the current latest release, moves to the correct location
+	sudo apt-get -y install python-virtualenv virtualenv
+        git clone $sentinelgit &&
+        cd sentinel
+        virtualenv ./venv
+        ./venv/bin/pip install -r requirements.txt
+	sudo -u $currentuser crontab -l > mycron
+        echo -e "* * * * * cd $homedir/sentinel && ./venv/bin/python bin/sentinel.py >/dev/null 2>&1"
+        sudo -u $currentuser echo -e "* * * * * cd $homedir/sentinel && ./venv/bin/python bin/sentinel.py >/dev/null 2>&1" >> mycron
+        sudo -u $currentuser crontab mycron
+        sudo -u $currentuser rm mycron
+		>> $homedir/sentinel/sentinel.conf
+        echo -e "`$COIN`_conf=`$homedir`/.$datadir/$dataconf.conf" >> $homedir/sentinel/sentinel.conf
+	sed -i '/assert creds.get('port') == /c\' $homedir/sentinel/test/unit/test_dash_config.py
+	echo -e "17778" >> $homedir/sentinel/test/unit/test_dash_config.py
+	./venv/bin/py.test ./test
+fi
+}
 
 
 
@@ -816,14 +848,14 @@ then
 	chmod +x ~/check.sh
 	sudo -u $currentuser crontab -l > mycron
 	echo -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir masternode status' $email"
-	sudo -u $currentuser echo -e -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir masternode status' $email" >> mycron
+	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh 2>&1 | tee output.txt | mail -s '$datadir masternode status' $email" >> mycron
 	sudo -u $currentuser crontab mycron
 	sudo -u $currentuser rm mycron
 else
 	chmod +x $homedir/check.sh
 	sudo -u $currentuser crontab -l > mycron
 	echo -e "*/30 * * * * $homedir/check.sh"
-	sudo -u $currentuser echo -e -e "*/30 * * * * $homedir/check.sh" >> mycron
+	sudo -u $currentuser echo -e "*/30 * * * * $homedir/check.sh" >> mycron
 	sudo -u $currentuser crontab mycron
 	sudo -u $currentuser rm mycron
 fi
