@@ -29,14 +29,14 @@
 # 
 
 ##### CHANGABLE VARIABLES #####
-COIN="shekel"
-datadir="shekel"
-daemon="shekeld"
-cli="shekel-cli"
-gitdir="JewNew"
-GITREPO="https://github.com/shekeltechnologies/JewNew.git"
-getblockcount="`curl -s http://shekelchain.com/api/getblockcount`"
-PORT="5500"
+COIN="northern"
+datadir="northern"
+daemon="northernd"
+cli="northern-cli"
+gitdir="northern"
+GITREPO="https://github.com/Northerncryptodev/Northern.git"
+getblockcount="`curl -s http://explorer.nort.network/api/getblockcount`"
+PORT="60151"
 externalip="`curl -s http://whatismyip.akamai.com`"
 ##### CHANGABLE VARIABLES #####
 
@@ -275,6 +275,8 @@ clear
 	$cli mnsync reset
 	echo -e "${RED}This should force the wallet to grab the latest list of current running masternodes"
 	echo -e "Waiting for mnsync to complete...please wait${NC}"
+	sleep 10
+	$cli startmasternode local false
 	sleep 10
 	$cli getinfo
 	$cli masternode status

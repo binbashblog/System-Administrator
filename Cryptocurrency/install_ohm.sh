@@ -354,32 +354,34 @@ else
 fi # end if $datadir.conf exists	
 } # end the upgrade
 
-check_iptables () { 
+check_iptables () {
 clear
-	echo -e "${RED}Checking firewall ports...${NC}"
-	sleep 2
-	if [ "iptables -L INPUT -nv | grep -q $PORT" ]
-	then 
-		echo -e "${RED}Port ${GREEN}$PORT ${RED}already in iptables"
-	else
-		echo -e "${RED}Adding iptables rules - ${GREEN}iptables -I INPUT -p tcp --dport $PORT -j ACCEPT${NC}"
-		iptables -I INPUT -p tcp --dport $PORT -j ACCEPT
-		service iptables save
-	fi
-	echo -e "${RED}Checking SSH port in config...${NC}"
-	ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
-	echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
-	if [ "iptables -L INPUT -nv | grep -q $ssh" ]
-	then
-		echo -e "${RED}Port ${GREEN}$ssh ${RED}already in iptables"
-	else
-		echo -e "${RED}Adding ssh port to iptable rules - ${GREEN}iptables -I INPUT -p tcp --dport $ssh -j ACCEPT${NC}"
-		iptables -I INPUT -p tcp --dport $ssh -j ACCEPT
-		service iptables save
-	fi
-	echo -e ""
-	echo -e "${RED}IPtables checked and saved${NC}"
-	sleep 2
+        echo -e "${RED}Checking firewall ports...${NC}"
+        sleep 2
+        if [ "iptables -L INPUT -nv | grep $PORT" ]
+        then
+                echo -e "${RED}Port ${GREEN}$PORT ${RED}already in iptables"
+        else
+                echo -e "${RED}Adding iptables rules - ${GREEN}iptables -I INPUT -p tcp --dport $PORT -j ACCEPT${NC}"
+                iptables -I INPUT -p tcp --dport $PORT -j ACCEPT
+                service iptables save
+                echo -e "${GREEN}$PORT${RED} has been allowed${NC}"
+        fi
+        echo -e "${RED}Checking SSH port in config...${NC}"
+        ssh=`grep -r Port /etc/ssh/sshd_config | awk '{print $2}'`
+        echo -e "${RED}SSH port is port ${GREEN}$ssh...${NC}"
+        if [ "iptables -L INPUT -nv | grep $ssh" ]
+        then
+                echo -e "${RED}Port ${GREEN}$ssh ${RED}already in iptables"
+        else
+                echo -e "${RED}Adding ssh port to iptable rules - ${GREEN}iptables -I INPUT -p tcp --dport $ssh -j ACCEPT${NC}"
+                iptables -I INPUT -p tcp --dport $ssh -j ACCEPT
+                service iptables save
+                echo -e "${GREEN}$ssh${RED} has been allowed${NC}"
+        fi
+        echo -e ""
+        echo -e "${RED}IPtables checked and saved${NC}"
+        sleep 2
 } # end the iptables function
 
 ######## ======== INSTALL FUNCTIONS ======== ########
