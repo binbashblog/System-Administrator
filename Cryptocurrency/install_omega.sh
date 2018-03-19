@@ -872,6 +872,7 @@ $(echo -e    "${GREEN}    Install Wallet & Set Up masternode (1)")
     Reconfigure masternode             (4)
     Install Systemd Service            (5)
     Install check script               (6)
+    Install Sentinel                   (7)
                                        (Q)uit
 $(echo -e    "${NC}    ------------------------------")
 EOF
@@ -883,6 +884,7 @@ EOF
     "4")  configure ;;
     "5")  install_service ;;
     "6")  install_check ;;
+    "7")  install_sentinel ;;
     "Q")  exit                      ;;
     "q")  echo -e "case sensitive!!"   ;;
      * )  echo -e "invalid option"     ;;
