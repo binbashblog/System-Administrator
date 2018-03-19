@@ -33,7 +33,7 @@ COIN="omegacoin"
 datadir="omegacoincore"
 dataconf="omegacoin.conf"
 coindaemon="omegacoind"
-startdaemon="omegacoind -daemon"
+startdaemon="omegacoind"
 cli="omegacoin-cli"
 gitdir="omegacoincore"
 GITREPO="https://github.com/omegacoinnetwork/omegacoin.git"
@@ -138,15 +138,15 @@ sleep 2
         echo rpcuser=$rpcuser >> $homedir/.$datadir/$dataconf & wait $!
         echo rpcpassword=$rpcpassword >> $homedir/.$datadir/$dataconf & wait $!
         echo rpcallowip=127.0.0.1 >> $homedir/.$datadir/$dataconf & wait $!
-        #echo -e rpcport=$RPC_PORT >> ~/.$datadir/$datadir.conf & wait $!
+        #echo -e rpcport=$RPC_PORT >> ~/.$datadir/$dataconf & wait $!
         echo staking=1 >> $homedir/.$datadir/$dataconf & wait $!
         echo listen=1 >> $homedir/.$datadir/$dataconf & wait $!
         echo daemon=1 >> $homedir/.$datadir/$dataconf & wait $!
         echo logtimestamps=1 >> $homedir/.$datadir/$dataconf & wait $!
         echo maxconnections=256 >> $homedir/.$datadir/$dataconf & wait $!
         echo masternode=1 >> $homedir/.$datadir/$dataconf & wait $!
-        echo -e externalip= >> $homedir/.$datadir/$datadir.conf & wait $!
-        echo -e -e masternodeaddr= >> $homedir/.$datadir/$datadir.conf & wait $!
+        echo -e externalip= >> $homedir/.$datadir/$dataconf & wait $!
+        echo -e -e masternodeaddr= >> $homedir/.$datadir/$dataconf & wait $!
         echo masternodeprivkey= >> $homedir/.$datadir/$dataconf & wait $!
         echo "addnode=142.208.127.121" >> $homedir/.$datadir/$dataconf & wait $! #OMEGA SPECIFIC
         echo "addnode=154.208.127.121" >> $homedir/.$datadir/$dataconf & wait $! #OMEGA SPECIFIC
@@ -179,7 +179,7 @@ sleep 2
         echo -e "${RED}Configuration completed successfully${NC}"
         sleep 2
 #else
-#        echo -e "${RED}$datadir.conf not found"
+#        echo -e "${RED}$dataconf not found"
 #       echo -e "This means the daemon install failed and the daemon didn't run properly"
 #       echo -e "Please re-run the script or check the git repo paths are correct"
 #       echo -e "Try installing the wallet from the git repo source manually to verify if the error is in this script or the source"
@@ -356,7 +356,7 @@ else
         echo -e "You will now be sent back to the menu"
         echo -e "goodbye"
         sleep 5
-fi # end if $datadir.conf exists
+fi # end if $dataconf exists
 } # end the upgrade
 
 check_iptables () {
@@ -660,7 +660,7 @@ User=$currentuser
 
 Type=forking
 PIDFile=$homedir/.$datadir/$coindaemon.pid
-ExecStart=/usr/local/bin/$coindaemon -daemon -pid=$homedir/.$datadir/$coindaemon.pid -conf=$homedir/.$datadir/$datadir.conf -datadir=$homedir/.$datadir
+ExecStart=/usr/local/bin/$coindaemon -daemon -pid=$homedir/.$datadir/$coindaemon.pid -conf=$homedir/.$datadir/$dataconf -datadir=$homedir/.$datadir
 #-disablewallet
 
 Restart=always
