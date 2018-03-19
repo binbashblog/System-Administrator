@@ -450,6 +450,7 @@ apt-get install libdb4.8-dev libdb4.8++-dev -qy
 if [ $hassentinel == "y"; ];
 then
 apt-get -yq install python-virtualenv virtualenv
+fi
 }
 
 run_yum () {
