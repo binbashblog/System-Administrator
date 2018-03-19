@@ -145,8 +145,8 @@ sleep 2
         echo logtimestamps=1 >> $homedir/.$datadir/$dataconf & wait $!
         echo maxconnections=256 >> $homedir/.$datadir/$dataconf & wait $!
         echo masternode=1 >> $homedir/.$datadir/$dataconf & wait $!
-        echo -e externalip= >> ~/.$datadir/$datadir.conf & wait $!
-        echo -e -e masternodeaddr= >> ~/.$datadir/$datadir.conf & wait $!
+        echo -e externalip= >> $homedir/.$datadir/$datadir.conf & wait $!
+        echo -e -e masternodeaddr= >> $homedir/.$datadir/$datadir.conf & wait $!
         echo masternodeprivkey= >> $homedir/.$datadir/$dataconf & wait $!
         echo "addnode=142.208.127.121" >> $homedir/.$datadir/$dataconf & wait $! #OMEGA SPECIFIC
         echo "addnode=154.208.127.121" >> $homedir/.$datadir/$dataconf & wait $! #OMEGA SPECIFIC
