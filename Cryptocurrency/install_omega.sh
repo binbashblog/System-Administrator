@@ -521,6 +521,7 @@ then
         git_install
         configure
         start_masternode
+	install_sentinel
 fi
 if ! grep -q 14.04 /etc/*elease && ! grep -q 16.04 /etc/*elease && ! grep -q centos /etc/*elease;
 then
