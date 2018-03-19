@@ -5,7 +5,7 @@ Scripts in this section
 ## Masternode install scripts
 - install_nort.sh
 - install_ohm.sh
-- install_omega
+- install_omega.sh
 - install_shekel.sh
 
 
