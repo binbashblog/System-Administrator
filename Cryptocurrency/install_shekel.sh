@@ -113,7 +113,7 @@ fi
 
 configure () { 
 clear
-rpcuser="`$COIN`rpc"
+rpcuser="shekelrpc"
 rpcpassword=`$daemon 2>&1 | grep '^rpcpassword='`
 echo -e "${RED}$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
 owner=$(chown $currentuser:$currentuser $homedir/.$datadir -R)

@@ -18,9 +18,9 @@
 # Usage
 # 1) su to root (sudo su -) if not already root
 # or run with sudo
-# 2) chmod +x install_shekel.sh
-# 3) run ./install_shekel.sh
-# or sudo ./install_shekel.sh
+# 2) chmod +x install_omega.sh
+# 3) run ./install_omega.sh
+# or sudo ./install_omega.sh
 
 # Requirements
 # Ubuntu 14.04 or Ubuntu 16.04 or CentOS7
@@ -32,7 +32,7 @@
 COIN="omegacoin"
 datadir="omegacoincore"
 dataconf="omegacoin"
-daemon="omegacoind"
+coindaemon="omegacoind"
 cli="omegacoin-cli"
 gitdir="omegacoincore"
 GITREPO="https://github.com/omegacoinnetwork/omegacoin.git"
@@ -71,12 +71,12 @@ then
                 sleep 5
         fi # end $COIN.service running
 else	
-	if pgrep -x $daemon > /dev/null
+	if pgrep -x $coindaemon > /dev/null
 	then
-		echo -e "${RED}$daemon is running${NC}"
+		echo -e "${RED}$coindaemon is running${NC}"
 	else
-		echo -e "${RED}starting $daemon...${NC}"
-		$daemon -daemon
+		echo -e "${RED}starting $coindaemon...${NC}"
+		$coindaemon -daemon
 	fi
 fi
 }
@@ -103,12 +103,12 @@ then
                 sleep 5
         fi # end $COIN.service running
 else
-        if pgrep -x $daemon > /dev/null
+        if pgrep -x $coindaemon > /dev/null
         then
-        	echo -e "${RED}$daemon is stopping${NC}"
+        	echo -e "${RED}$coindaemon is stopping${NC}"
 		$cli stop
         else
-        	echo -e "${RED}$daemon still running"
+        	echo -e "${RED}$coindaemon still running"
 		echo -e "There may be a problem with the service"
                 echo -e "You may need to quit the script and stop the daemon manually!${NC}"
         fi
@@ -117,9 +117,10 @@ fi
 
 configure () { 
 clear
+stop_daemon
 rpcuser="`$COIN`rpc"
-rpcpassword=`$daemon 2>&1 | grep '^rpcpassword='`
-echo -e "${RED}$daemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
+rpcpassword=`$coindaemon -daemon 2>&1 | grep '^rpcpassword='`
+echo -e "${RED}$coindaemon has been run once, it should have created the .$datadir directory and generated the rpcpassword${NC}"
 owner=$(chown $currentuser:$currentuser $homedir/.$datadir -R)
 echo $owner
 sleep 2
@@ -393,7 +394,7 @@ clear
 ######## ======== INSTALL FUNCTIONS ======== ########
 git_install () {
 clear
-	# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
+	# Downloads and extracts the current latest release, moves to the correct location then runs $coindaemon
 	git clone $GITREPO $gitdir
 	cd $gitdir
 	chmod +x share/genbuild.sh
@@ -402,16 +403,16 @@ clear
 	./autogen.sh
 	./configure --without-gui
 	make
-	if [ -f "/usr/local/bin/$daemon" ]; 
+	if [ -f "/usr/local/bin/$coindaemon" ]; 
 	then 
-		echo -e "${RED}found existing ${GREEN}$daemon"
+		echo -e "${RED}found existing ${GREEN}$coindaemon"
 		echo -e "${RED}Deleting existing daemon${NC}"
 		make uninstall
-		if [ -f "/usr/local/bin/$daemon" ] || [ -f "/usr/local/bin/$cli" ];
+		if [ -f "/usr/local/bin/$coindaemon" ] || [ -f "/usr/local/bin/$cli" ];
 		then
-		rm /usr/local/bin/$daemon
+		rm /usr/local/bin/$coindaemon
 		rm /usr/local/bin/$cli
-		echo -e "${RED}$daemon and $cli manually deleted${NC}"
+		echo -e "${RED}$coindaemon and $cli manually deleted${NC}"
 		fi
 	fi
 	make install
@@ -543,7 +544,7 @@ fi
 upgrade_masternode () {
 clear
 	echo -e "${RED}This will upgrade your masternode"
-	echo -e "Replacing your existing ${GREEN}$daemon ${RED}and ${GREEN}$cli ${RED}with the latest available${NC}"
+	echo -e "Replacing your existing ${GREEN}$coindaemon ${RED}and ${GREEN}$cli ${RED}with the latest available${NC}"
 	sleep 5
 if grep -q 14.04 /etc/*elease # This checks if the release file on the server reports Ubuntu 14.04, if not it skips this section
 then
@@ -554,9 +555,9 @@ then
 		# Patches the system, installs required packages and repositories
 		run_apt
 		echo -e "Installed any missing packages"
-		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
+		# Downloads and extracts the current latest release, moves to the correct location then runs $coindaemon
 		git_install
-		echo -e "Latest $daemon installed"
+		echo -e "Latest $coindaemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo -e "$COIN Systemd service found!"
@@ -567,8 +568,8 @@ then
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo -e "Starting $daemon..."
-			$daemon -daemon
+			echo -e "Starting $coindaemon..."
+			$coindaemon -daemon
 				sleep 2
 		start_masternode
 		fi
@@ -582,9 +583,9 @@ then
 		# Patches the system, installs required packages and repositories
 		run_apt
 		echo -e "Installed any missing packages"
-		# Downloads and extracts the current latest release, moves to the correct location then runs $daemon
+		# Downloads and extracts the current latest release, moves to the correct location then runs $coindaemon
 		git_install
-		echo -e "Latest $daemon installed"
+		echo -e "Latest $coindaemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo -e "$COIN Systemd service found!"
@@ -595,8 +596,8 @@ then
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo -e "Starting $daemon..."
-			$daemon -daemon
+			echo -e "Starting $coindaemon..."
+			$coindaemon -daemon
 				sleep 2
 		start_masternode
 		fi
@@ -608,7 +609,7 @@ then
 		run_yum
 		echo -e "Installed any missing packages"
 		git_install
-		echo -e "Latest $daemon installed"
+		echo -e "Latest $coindaemon installed"
 		sleep 2
 		if [ -f /etc/systemd/system/$COIN.service ]; then
 			echo -e "$COIN Systemd service found!"
@@ -619,8 +620,8 @@ then
 			systemctl start $COIN.service
 			sleep 5
 		else
-			echo -e "Starting $daemon..."
-			$daemon -daemon
+			echo -e "Starting $coindaemon..."
+			$coindaemon -daemon
 				sleep 2
 		start_masternode
 		fi
@@ -635,7 +636,7 @@ fi # end the centos check if-statement
 
 install_service () {
 clear
-echo -e "Installing systemd script to start at boot and start $daemon...please wait"
+echo -e "Installing systemd script to start at boot and start $coindaemon...please wait"
 sleep 5
 cat <<EOF > /etc/systemd/system/$COIN.service
 [Unit]
@@ -647,8 +648,8 @@ User=$currentuser
 
 
 Type=forking
-PIDFile=$homedir/.$datadir/$daemon.pid
-ExecStart=/usr/local/bin/$daemon -daemon -pid=$homedir/.$datadir/$daemon.pid -conf=$homedir/.$datadir/$datadir.conf -datadir=$homedir/.$datadir
+PIDFile=$homedir/.$datadir/$coindaemon.pid
+ExecStart=/usr/local/bin/$coindaemon -daemon -pid=$homedir/.$datadir/$coindaemon.pid -conf=$homedir/.$datadir/$datadir.conf -datadir=$homedir/.$datadir
 #-disablewallet
 
 Restart=always
@@ -689,7 +690,7 @@ abort()
 {
     echo -e >&2 '
 ========================================
-=== $daemon not running...restarting ===
+=== $coindaemon not running...restarting ===
 ========================================
 '
 rm $homedir/.$datadir/mncache.dat -rf
@@ -907,9 +908,11 @@ $(echo -e    "${RED}    Please enter your choice:")
 
 $(echo -e    "${GREEN}    Install Wallet & Set Up masternode (1)")
     Upgrade Wallet & Start masternode  (2)
+    ======== Advanced Section ========
     Start masternode                   (3)
-    Install Systemd Service	       (4)
-    Install check script	       (5)
+    Reconfigure masternode             (4)
+    Install Systemd Service	       (5)
+    Install check script	       (6)
            			       (Q)uit
 $(echo -e    "${NC}    ------------------------------")
 EOF
@@ -918,8 +921,9 @@ EOF
     "1")  install ;;
     "2")  upgrade ;;
     "3")  start_masternode ;;
-    "4")  install_service ;;
-    "5")  install_check ;;
+    "4")  configure ;;
+    "5")  install_service ;;
+    "6")  install_check ;;
     "Q")  exit                      ;;
     "q")  echo -e "case sensitive!!"   ;; 
      * )  echo -e "invalid option"     ;;
