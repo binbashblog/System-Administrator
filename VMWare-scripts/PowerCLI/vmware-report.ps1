@@ -1,5 +1,5 @@
 # Not my own as you can see below, but I use it everywhere so credit to the Author.
-# I have made a few changes it this script such as requiring a credfile in xml format. This is to secure credentials instead of storing in plain text
+# I have made a few changes to this script such as requiring a credfile in xml format. This is to secure credentials instead of storing in plain text
 # Also requires some dependencies for the charts
 
 ############################# INFORMATION #######################################
