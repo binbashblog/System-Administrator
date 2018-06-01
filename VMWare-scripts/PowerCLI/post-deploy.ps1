@@ -2,34 +2,34 @@
 #      Post-deploy powercli script - Version 2.0         #
 #		    Created 05-10-2016                   #
 #		  Made better 07-09-2017                 #
-#                 Script is written by 			 #
-#                © Harpinder Sanghera :) �		 #
+#                 Script is written by 		         #
+#                © Harpinder Sanghera :) ©		 #
 ##########################################################
 
-#######################################################################################
-# WARNING:                                                                            #
+########################################################################################
+# WARNING:                                                                             #
 # Do not fudge this script up, it connects to vCenter infrastructure with a privileged #
-# account so messing with this script too much could cause damage                     #
-#                                                                                     #
-# Summary:                                                                            # 
-# Using Invoke-VMScript to do all the heavy lifting                                   #
-# - using VMware tools as the delivery mechanism for post deployment configuration    #
-# Invoke-VMScript requires the VM to be switched on, but not networked! As long as    #
-# the VM is booted into the OS, regardless of whether it is online or offline,        #
-# it will just work.                                                                  #
-# So this script can also be used where SSH is not possible.                          #
-# Uses a CSV file to get the values. A funky web frontend can be written in PHP to    #
-# parse the values in a CSV script and then execute the powershell script             #
-# something to do for the next version                                                #
-# Just run it like this: ./postdeploy.ps1                                             #
-#                                                                                     #
-# CSV Example:                                                                        #
-#                                                                                     #
-#                                                                                     #
-#                                                                                     #
-# For Example::                                                                       #
-#                                                                                     #
-#######################################################################################
+# account so messing with this script too much could cause damage                      # 
+#                                                                                      #
+# Summary:                                                                             # 
+# Using Invoke-VMScript to do all the heavy lifting                                    #
+# - using VMware tools as the delivery mechanism for post deployment configuration     #
+# Invoke-VMScript requires the VM to be switched on, but not networked! As long as     #
+# the VM is booted into the OS, regardless of whether it is online or offline,         #
+# it will just work.                                                                   #
+# So this script can also be used where SSH is not possible.                           #
+# Uses a CSV file to get the values. A funky web frontend can be written in PHP to     #
+# parse the values in a CSV script and then execute the powershell script              #
+# something to do for the next version                                                 #
+# Just run it like this: ./pvrackdeploy.ps1                                            #
+#                                                                                      #
+# CSV Example:                                                                         #
+#                                                                                      #
+#                                                                                      #
+#                                                                                      #
+# For Example::                                                                        #
+#                                                                                      #
+########################################################################################
 
 #############################################################################################################
 # Changelog:                                                                                                #
@@ -39,9 +39,9 @@
 #   v1.0 - The first stable happy version of the code, with comments about how it works and what it does;   #
 #          Deemed "production ready"; Added the elevator=noop line to grub.conf                             #
 #   v1.1 - Changed the ordering of Puppet, RHN and YUM registration                                         #
-#	v1.2 - Added the ability for the script to add additional disks (up to 5).                              #
+#   v1.2 - Added the ability for the script to add additional disks (up to 5).                              #
 #          Csv file would need headings such as disk[1-5], lvname[1-5], vgname[1-5], sizegb[1-5], etc       #
-#	v1.3 - Added create vm from template at the top of the script to test having just 1 powershell script   #
+#   v1.3 - Added create vm from template at the top of the script to test having just 1 powershell script   #
 #          to do the whole deployment                                                                       #
 #   v1.4 - Increased start-sleep to 10 seconds for toolsStatus as sometimes it takes longer for the VM to   #
 #          finish coming up                                                                                 #
@@ -98,7 +98,7 @@ $vcenter = $vcenter | Sort-Object -Unique
 foreach ($vcenters in $vcenter){
 
 Write-Host "Connecting to vCenter $vm.vcenter" -foregroundcolor "magenta" 
-$credentials=Get-Credential -Username "@" -Message "Enter your vCenter credentials" 
+$credentials=Get-Credential -Username "@vmware.local" -Message "Enter your vCenter credentials" 
 Connect-VIServer -Server $vcenter -Credential $credentials
 }
 
@@ -347,7 +347,7 @@ $rhelsat = @"
 ##################################################
 # Register with RHEL Satellite & import GPG keys #
 ##################################################
-## This can be configured within the First Boot script inside the Template (See VM Console)
+## This is now configured within the First Boot script inside the Template (See VM Console)
 "@
 Write-Host "$($rhelsat)" -ForegroundColor Yellow
 
@@ -355,7 +355,7 @@ $puppet = @"
 ##########
 # Puppet #
 ##########
-## This can be configured within the First Boot script inside the Template (See VM Console)
+## This is now configured within the First Boot script inside the Template (See VM Console)
 "@
 Write-Host "$($puppet)" -ForegroundColor Yellow
 
@@ -363,7 +363,7 @@ $yum = @"
 #######
 # Yum #
 #######
-## This can be configured within the First Boot script inside the Template (See VM Console)
+## This is now configured within the First Boot script inside the Template (See VM Console)
 "@
 Write-Host "$($yum)" -ForegroundColor Yellow
 
@@ -447,4 +447,3 @@ D░========\"”"”"”"”"”"”\.…………………………………�
 
 Write-Host "$($peace3)" -ForegroundColor Red
 Start-Sleep 1
-
