@@ -1,1 +1,0 @@
-## Bash scripts I use
