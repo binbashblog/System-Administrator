@@ -1,0 +1,23 @@
+---
+
+# NTP Configuration
+
+ntp::ntp_servers:
+  - 0.uk.pool.ntp.org iburst
+  - 1.uk.pool.ntp.org iburst
+  - 2.uk.pool.ntp.org iburst
+  - 3.uk.pool.ntp.org iburst
+
+ntp::ntp_restrict: []
+
+# Postfix Configuration
+
+postfix::postfix_function: client
+postfix::smtp_relay: mail1
+postfix::fallback_smtp_relay: mail2
+
+# example - 'admin : joe.blogs@truphone.com'
+postfix::mail_alias: []
+
+sshd::sshd_allowusers: debian-user
+
