@@ -11,3 +11,5 @@ append preseed/url=http://preseed.handsoff.local/ubuntu16.cfg vga=788 netcfg/cho
 ```
 
 Store the .sh scripts too, modify them for your own use. These post install scripts get your system ready, you can then template it up in your favourite Virtual or Cloud provider.
+
+For newer Ubuntu releases 18.04 LTS and higher, I use the alternative installer iso with the older installer which works with preseed better than the new one.
