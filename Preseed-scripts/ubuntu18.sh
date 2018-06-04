@@ -14,27 +14,29 @@
 
 echo 'user:saN0NMA5ST./k' | chpasswd -e
 
-echo '
+cat <<EOF > /etc/netplan/01-netcfg.yaml
 
-auto eth0
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no
+      dhcp6: no
+      addresses: [10.0.3.17/24]
+      gateway4: 10.0.3.254
+      nameservers:
+        addresses: [10.0.3.5,10.0.3.6]
+EOF
 
-iface eth0 inet static
-address 10.0.3.17
-netnask 255.255.255.0
-network 10.0.3.0
-gateway 10.0.3.254
-dns-nameservers 10.0.3.5 10.0.3.6 
-
-' >> /etc/network/interfaces
-
-ifup eth0
+netplan apply
 
 cat <<EOF > /etc/hostname
 ubuntu-server
 EOF
 # set hostname
-#echo $hostname > /etc/hostname
-/etc/init.d/hostname.sh
+echo $hostname > /etc/hostname
+#/etc/init.d/hostname.sh
 
 # OpenSSH Server configuration
 rm /etc/ssh/ssh_host_*
@@ -85,12 +87,6 @@ AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 EOF
 
-cat <<EOF > /etc/resolv.conf
-domain ubuntu.local
-search ubuntu.local
-nameserver 10.0.3.5
-nameserver 10.0.3.6
-EOF
 
 cat <<EOF > /etc/hosts
 127.0.0.1       ubuntu-server ubuntu-server.ubuntu.local
@@ -103,18 +99,18 @@ cd /var/tmp
 #apt-get -y dist-upgrade
 #apt-get -y autoremove
 
-wget https://apt.puppetlabs.com/puppetlabs-release-pc1-bionic.deb
-dpkg -i puppetlabs-release-pc1-bionic.deb
+#wget https://apt.puppetlabs.com/puppetlabs-release-pc1-bionic.deb
+#dpkg -i puppetlabs-release-pc1-bionic.deb
 
-cat <<EOF > /etc/apt/preferences.d/00-puppet.pref
+#cat <<EOF > /etc/apt/preferences.d/00-puppet.pref
 
-Package: puppet
-Pin: version 3.8*
-Pin-Priority: 501
-EOF
+#Package: puppet
+#Pin: version 3.8*
+#Pin-Priority: 501
+#EOF
 
-gpg --keyserver keys.gnupg.net --recv-keys F8C1CA08A57B9ED7
-gpg --armor --export F8C1CA08A57B9ED7 | apt-key add -
+#gpg --keyserver keys.gnupg.net --recv-keys F8C1CA08A57B9ED7
+#gpg --armor --export F8C1CA08A57B9ED7 | apt-key add -
 
 #cat <<EOF > /etc/apt/sources.list.d/omd-stable.list
 #deb http://labs.consol.de/repo/stable/debian jessie main
