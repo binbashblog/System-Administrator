@@ -16,8 +16,7 @@ postfix::postfix_function: client
 postfix::smtp_relay: mail1
 postfix::fallback_smtp_relay: mail2
 
-# example - 'admin : joe.blogs@truphone.com'
+# example - 'admin : joe.blogs@bloggs.com'
 postfix::mail_alias: []
 
-sshd:sshd_allowusers: rhel-user
-
+sshd::sshd_allowusers: user
